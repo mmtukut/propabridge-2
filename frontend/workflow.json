@@ -1,0 +1,529 @@
+{
+  "name": "Propabridge WhatsApp Property Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-webhook",
+        "options": {}
+      },
+      "id": "webhook-receiver",
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "propabridge-bot",
+      "notes": "Receives WhatsApp messages from Meta Business API"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.entry[0].changes[0].value.messages[0].type}}",
+              "value2": "text"
+            }
+          ]
+        }
+      },
+      "id": "message-filter",
+      "name": "Filter Text Messages",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "userPhone",
+              "value": "={{$json.entry[0].changes[0].value.messages[0].from}}"
+            },
+            {
+              "name": "userMessage",
+              "value": "={{$json.entry[0].changes[0].value.messages[0].text.body}}"
+            },
+            {
+              "name": "messageId",
+              "value": "={{$json.entry[0].changes[0].value.messages[0].id}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-message",
+      "name": "Extract Message Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "userSession",
+        "key": "={{$node[\"Extract Message Data\"].json[\"userPhone\"]}}"
+      },
+      "id": "get-session",
+      "name": "Get User Session",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "notes": "Retrieve user context from Redis"
+    },
+    {
+      "parameters": {
+        "resource": "chatCompletion",
+        "model": "gpt-4-turbo-preview",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are Propabridge AI, a property matching assistant for Nigeria.\n\nYour capabilities:\n1. Parse natural language property requests\n2. Extract: location, budget, bedrooms, property type\n3. Match properties from database\n4. Provide instant recommendations\n\nAlways:\n- Be concise and friendly\n- Ask for missing information\n- Provide maximum 3 matches\n- Include verification status\n- Format prices in Naira\n\nUser Context: {{$json.userSession || 'New User'}}\n\nProperty Database Sample:\n[\n  {\n    \"id\": \"PB-2847\",\n    \"type\": \"3 Bed Flat\",\n    \"location\": \"Wuse 2, Abuja\",\n    \"price\": 2500000,\n    \"features\": \"24/7 power, parking, gated\",\n    \"verified\": true,\n    \"matchScore\": 0\n  },\n  {\n    \"id\": \"PB-2848\",\n    \"type\": \"2 Bed Flat\",\n    \"location\": \"Maitama, Abuja\",\n    \"price\": 3500000,\n    \"features\": \"Pool, gym, 24/7 security\",\n    \"verified\": true,\n    \"matchScore\": 0\n  },\n  {\n    \"id\": \"PB-2849\",\n    \"type\": \"3 Bed Duplex\",\n    \"location\": \"Gwarinpa, Abuja\",\n    \"price\": 4000000,\n    \"features\": \"Garden, BQ, solar power\",\n    \"verified\": true,\n    \"matchScore\": 0\n  }\n]\n\nRespond with JSON:\n{\n  \"intent\": \"search|list|question|greeting\",\n  \"extracted\": {\n    \"location\": \"\",\n    \"budget\": \"\",\n    \"bedrooms\": \"\",\n    \"type\": \"\"\n  },\n  \"response\": \"Your message to user\",\n  \"properties\": [],\n  \"needsInfo\": []\n}"
+            },
+            {
+              "role": "user",
+              "content": "{{$node[\"Extract Message Data\"].json[\"userMessage\"]}}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "responseFormat": {
+            "type": "json_object"
+          }
+        }
+      },
+      "id": "ai-processor",
+      "name": "AI Process Request",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "mode": "jsonParse",
+        "jsonString": "={{$json.choices[0].message.content}}"
+      },
+      "id": "parse-ai-response",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.intent}}",
+              "operation": "equals",
+              "value2": "search"
+            }
+          ]
+        }
+      },
+      "id": "check-intent",
+      "name": "Check Intent",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM properties WHERE \n  location ILIKE '%{{$json.extracted.location}}%' \n  AND price <= {{$json.extracted.budget || 999999999}}\n  AND bedrooms >= {{$json.extracted.bedrooms || 1}}\n  AND verified = true\nORDER BY \n  CASE WHEN price <= {{$json.extracted.budget}} THEN 1 ELSE 0 END DESC,\n  created_at DESC\nLIMIT 3",
+        "options": {}
+      },
+      "id": "search-properties",
+      "name": "Search Properties",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [1650, 200],
+      "notes": "Query PostgreSQL for matching properties"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format properties for WhatsApp\nconst properties = items[0].json;\n\nif (!properties || properties.length === 0) {\n  return [{\n    json: {\n      message: \"I couldn't find properties matching your criteria. Try adjusting your budget or location.\",\n      hasProperties: false\n    }\n  }];\n}\n\n// Format property messages\nlet message = `🎯 Found ${properties.length} perfect matches!\\n\\n`;\n\nproperties.forEach((prop, index) => {\n  const formattedPrice = new Intl.NumberFormat('en-NG', {\n    style: 'currency',\n    currency: 'NGN',\n    maximumFractionDigits: 0\n  }).format(prop.price);\n  \n  message += `${index + 1}. *${prop.type}*\\n`;\n  message += `📍 ${prop.location}\\n`;\n  message += `💰 ${formattedPrice}/year\\n`;\n  message += `✅ ${prop.verified ? 'Verified' : 'Pending'}\\n`;\n  message += `🏠 Features: ${prop.features}\\n`;\n  message += `🔗 View: propabridge.ng/${prop.id}\\n\\n`;\n});\n\nmessage += `Reply with property number for details or contact info.`;\n\nreturn [{\n  json: {\n    message: message,\n    hasProperties: true,\n    properties: properties\n  }\n}];"
+      },
+      "id": "format-properties",
+      "name": "Format Properties",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1850, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Handle non-search intents\nconst aiResponse = items[0].json;\nlet message = '';\n\nswitch(aiResponse.intent) {\n  case 'list':\n    message = `To list your property:\\n\\n`;\n    message += `1. Send photos of your property\\n`;\n    message += `2. Share location and price\\n`;\n    message += `3. We'll verify within 24hrs\\n\\n`;\n    message += `Or visit: propabridge.ng/list\\n`;\n    message += `Call: +234 805 526 9579`;\n    break;\n    \n  case 'greeting':\n    message = `👋 Hi! I'm Propabridge AI.\\n\\n`;\n    message += `Tell me what you're looking for:\\n`;\n    message += `• \"3 bedroom in Wuse under 3M\"\\n`;\n    message += `• \"Apartments in Maitama\"\\n`;\n    message += `• \"Houses for sale in Abuja\"\\n\\n`;\n    message += `I'll find matches in 30 seconds!`;\n    break;\n    \n  case 'question':\n    message = aiResponse.response || \"I can help you find or list properties. Just describe what you need!\";\n    break;\n    \n  default:\n    message = aiResponse.response;\n}\n\nreturn [{\n  json: {\n    message: message,\n    hasProperties: false\n  }\n}];"
+      },
+      "id": "handle-other-intents",
+      "name": "Handle Other Intents",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1650, 400]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{$node[\"Extract Message Data\"].json[\"userPhone\"]}}",
+        "value": "={{JSON.stringify($node[\"Parse AI Response\"].json)}}",
+        "expire": true,
+        "ttl": 3600
+      },
+      "id": "update-session",
+      "name": "Update Session",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [2050, 300],
+      "notes": "Store conversation context"
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "https://graph.facebook.com/v18.0/YOUR_PHONE_NUMBER_ID/messages",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "messaging_product",
+              "value": "whatsapp"
+            },
+            {
+              "name": "to",
+              "value": "={{$node[\"Extract Message Data\"].json[\"userPhone\"]}}"
+            },
+            {
+              "name": "type",
+              "value": "text"
+            },
+            {
+              "name": "text",
+              "value": "={{JSON.stringify({body: $json.message})}}"
+            }
+          ]
+        }
+      },
+      "id": "send-whatsapp",
+      "name": "Send WhatsApp Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [2250, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "WhatsApp Business API"
+        }
+      },
+      "notes": "Configure with your Meta Business API token"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "conversations",
+        "columns": "phone, message_in, message_out, intent, timestamp",
+        "values": "={{$node[\"Extract Message Data\"].json[\"userPhone\"]}}, {{$node[\"Extract Message Data\"].json[\"userMessage\"]}}, {{$json.message}}, {{$node[\"Parse AI Response\"].json[\"intent\"]}}, {{new Date().toISOString()}}"
+      },
+      "id": "log-conversation",
+      "name": "Log Conversation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [2250, 500],
+      "notes": "Track all conversations for analytics"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "success"
+            }
+          ]
+        }
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2450, 300],
+      "notes": "Acknowledge receipt to WhatsApp"
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 9
+            }
+          ]
+        }
+      },
+      "id": "daily-analytics",
+      "name": "Daily Analytics",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 700],
+      "notes": "Run daily reports"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  COUNT(*) as total_conversations,\n  COUNT(DISTINCT phone) as unique_users,\n  intent,\n  DATE(timestamp) as date\nFROM conversations\nWHERE timestamp >= NOW() - INTERVAL '24 hours'\nGROUP BY intent, DATE(timestamp)\nORDER BY date DESC",
+        "options": {}
+      },
+      "id": "analytics-query",
+      "name": "Get Analytics",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [450, 700]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format analytics report\nconst data = items[0].json;\n\nlet report = `📊 *Propabridge Daily Report*\\n\\n`;\nreport += `Date: ${new Date().toLocaleDateString()}\\n\\n`;\n\nlet totalConversations = 0;\nlet uniqueUsers = 0;\nlet intents = {};\n\ndata.forEach(row => {\n  totalConversations += parseInt(row.total_conversations);\n  uniqueUsers = Math.max(uniqueUsers, parseInt(row.unique_users));\n  intents[row.intent] = (intents[row.intent] || 0) + parseInt(row.total_conversations);\n});\n\nreport += `*Metrics:*\\n`;\nreport += `• Total Conversations: ${totalConversations}\\n`;\nreport += `• Unique Users: ${uniqueUsers}\\n`;\nreport += `• Avg Conv/User: ${(totalConversations/uniqueUsers).toFixed(1)}\\n\\n`;\n\nreport += `*Intent Breakdown:*\\n`;\nObject.entries(intents).forEach(([intent, count]) => {\n  const percentage = ((count/totalConversations) * 100).toFixed(0);\n  report += `• ${intent}: ${count} (${percentage}%)\\n`;\n});\n\nreturn [{\n  json: {\n    report: report,\n    metrics: {\n      totalConversations,\n      uniqueUsers,\n      intents\n    }\n  }\n}];"
+      },
+      "id": "format-analytics",
+      "name": "Format Analytics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [650, 700]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "https://graph.facebook.com/v18.0/YOUR_PHONE_NUMBER_ID/messages",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "messaging_product",
+              "value": "whatsapp"
+            },
+            {
+              "name": "to",
+              "value": "2348055269579"
+            },
+            {
+              "name": "type",
+              "value": "text"
+            },
+            {
+              "name": "text",
+              "value": "={{JSON.stringify({body: $json.report})}}"
+            }
+          ]
+        }
+      },
+      "id": "send-analytics",
+      "name": "Send Analytics Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 700],
+      "notes": "Send daily report to admin"
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter Text Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Text Messages": {
+      "main": [
+        [
+          {
+            "node": "Extract Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Message Data": {
+      "main": [
+        [
+          {
+            "node": "Get User Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Session": {
+      "main": [
+        [
+          {
+            "node": "AI Process Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Process Request": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Check Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Intent": {
+      "main": [
+        [
+          {
+            "node": "Search Properties",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Other Intents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Properties": {
+      "main": [
+        [
+          {
+            "node": "Format Properties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Properties": {
+      "main": [
+        [
+          {
+            "node": "Update Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Other Intents": {
+      "main": [
+        [
+          {
+            "node": "Update Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Session": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Reply": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Analytics": {
+      "main": [
+        [
+          {
+            "node": "Get Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Analytics": {
+      "main": [
+        [
+          {
+            "node": "Format Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Analytics": {
+      "main": [
+        [
+          {
+            "node": "Send Analytics Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "error-handler-workflow"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "Propabridge",
+      "color": "#00C853"
+    },
+    {
+      "name": "WhatsApp",
+      "color": "#25D366"
+    },
+    {
+      "name": "AI",
+      "color": "#6366F1"
+    }
+  ],
+  "notes": "## Propabridge WhatsApp Bot Workflow\n\n### Setup Requirements:\n1. **Meta Business API**: Get WhatsApp Business API access\n2. **OpenAI API**: For GPT-4 processing\n3. **PostgreSQL**: Properties database\n4. **Redis**: Session management\n\n### Configuration Steps:\n1. Replace YOUR_PHONE_NUMBER_ID with your WhatsApp Business phone ID\n2. Add your Meta Business API token to HTTP Header Auth\n3. Configure OpenAI credentials\n4. Set up PostgreSQL connection\n5. Configure Redis connection\n6. Set webhook URL in Meta Business dashboard\n\n### Database Schema:\n```sql\nCREATE TABLE properties (\n  id VARCHAR(20) PRIMARY KEY,\n  type VARCHAR(100),\n  location VARCHAR(200),\n  price DECIMAL(10,2),\n  bedrooms INT,\n  features TEXT,\n  verified BOOLEAN,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE conversations (\n  id SERIAL PRIMARY KEY,\n  phone VARCHAR(20),\n  message_in TEXT,\n  message_out TEXT,\n  intent VARCHAR(50),\n  timestamp TIMESTAMP DEFAULT NOW()\n);\n```\n\n### Testing:\n1. Use Meta's test number first\n2. Monitor webhook responses\n3. Check Redis for session data\n4. Verify PostgreSQL logging",
+  "updatedAt": "2024-01-15T10:00:00.000Z",
+  "createdAt": "2024-01-15T10:00:00.000Z"
+}

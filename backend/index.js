@@ -13,17 +13,22 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve static files from the root directory
-app.use(express.static(path.join(__dirname, '..')));
+// Serve static files from the frontend directory
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Handle the root route by serving index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 // API Routes
 const whatsappRoutes = require('./routes/whatsapp');
+const authRoutes = require('./routes/auth');
+const propertiesRoutes = require('./routes/properties');
+
 app.use('/api/v1', whatsappRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/properties', propertiesRoutes);
 
 // Start the server
 app.listen(PORT, () => {

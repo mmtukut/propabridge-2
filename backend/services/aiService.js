@@ -274,22 +274,13 @@ const generateResponse = async (intent, entities, phoneNumber, context = []) => 
           return response;
         }
         
-        // Format top 3 properties
-        const topProperties = properties.slice(0, 3);
-        let response = `🎯 *Found ${properties.length} ${properties.length === 1 ? 'property' : 'properties'}* matching your search!\n\n`;
-        
-        topProperties.forEach((prop, index) => {
-          response += formatPropertyForWhatsApp(prop, index + 1);
-          response += '\n';
-        });
-        
-        if (properties.length > 3) {
-          response += `📋 And ${properties.length - 3} more properties available!\n\n`;
-        }
-        
-        response += "💬 Reply with:\n• Property ID to see details\n• 'Schedule viewing' to book\n• 'Show more' for other options";
-        
-        return response;
+        // For frontend: return property data instead of formatted text
+        // This will be handled by the frontend to display property cards
+        return {
+          type: 'property_results',
+          properties: properties,
+          summary: `Found ${properties.length} ${properties.length === 1 ? 'property' : 'properties'} matching your search!`
+        };
       } catch (error) {
         console.error('Error searching properties:', error);
         return "⚠️ I'm having trouble searching right now. Please try again in a moment.";

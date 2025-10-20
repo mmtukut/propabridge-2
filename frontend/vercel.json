@@ -1,15 +1,19 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "backend/index.js",
-      "use": "@vercel/node"
+      "source": "/api/v1/(.*)",
+      "destination": "https://propabridge-api.onrender.com/api/v1/$1"
     }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/(.*)",
-      "dest": "/backend/index.js"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
     }
   ]
 }

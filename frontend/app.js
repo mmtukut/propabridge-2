@@ -33,9 +33,13 @@ function showScreen(screenId) {
   if (screen) {
     screen.classList.add('active');
     
-    // Add haptic feedback (if supported)
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
+    // Add haptic feedback (if supported and user has interacted)
+    if (navigator.vibrate && document.hasFocus()) {
+      try {
+        navigator.vibrate(50);
+      } catch (e) {
+        // Ignore vibrate errors
+      }
     }
     
     // Update state
@@ -146,8 +150,12 @@ async function findProperties() {
     // Simulate processing animation
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // If AI returned property matches
-    if (response.intent === 'search' && response.entities) {
+    // Check if AI returned property data
+    if (response.hasPropertyData && response.properties) {
+      AppState.searchResults = response.properties;
+      showScreen('find-results');
+    } else if (response.intent === 'search' && response.entities) {
+      // Fallback: use direct property search
       const properties = await API.properties.search(response.entities);
       AppState.searchResults = properties;
       showScreen('find-results');
@@ -192,23 +200,39 @@ function createPropertyCard(property, index) {
   card.className = 'property-card';
   card.onclick = () => showPropertyDetail(property.id);
   
-  const verified = property.verified ? '<div class="verified-badge">Verified</div>' : '';
-  const matchScore = property.matchScore ? `<div class="match-score">Match: ${property.matchScore}%</div>` : '';
+  const verified = property.verified ? '<div class="verified-badge">✅ Verified</div>' : '';
+  const matchScore = property.matchScore ? `<div class="match-score">🎯 ${property.matchScore}% Match</div>` : '';
+  
+  // Format amenities
+  const amenities = property.amenities ? property.amenities.slice(0, 3).join(' • ') : '';
   
   card.innerHTML = `
     <div class="property-image">
       ${verified}
-      ${property.imageUrl ? `<img src="${property.imageUrl}" alt="${property.type}">` : 'Property Image'}
+      <div class="image-placeholder">
+        <div class="image-icon">🏠</div>
+        <div class="image-text">Property ${property.id}</div>
+      </div>
     </div>
     <div class="property-details">
-      <div class="property-price">₦${property.price.toLocaleString()}/year</div>
+      <div class="property-price">₦${parseFloat(property.price).toLocaleString()}/year</div>
       <div class="property-location">${property.type} • ${property.location}</div>
       <div class="property-specs">
-        ${property.area ? `<span>${property.area}m²</span>` : ''}
-        ${property.bedrooms ? `<span>${property.bedrooms} bed</span>` : ''}
-        ${property.bathrooms ? `<span>${property.bathrooms} bath</span>` : ''}
+        <span>📐 ${property.area || 'N/A'}m²</span>
+        <span>🛏️ ${property.bedrooms} Bed</span>
+        <span>🚿 ${property.bathrooms || property.bedrooms} Bath</span>
       </div>
+      ${amenities ? `<div class="property-amenities">✨ ${amenities}</div>` : ''}
       ${matchScore}
+      <div class="property-features">${property.features || 'No additional features listed'}</div>
+    </div>
+    <div class="property-actions">
+      <button class="btn-secondary" onclick="event.stopPropagation(); contactLandlord(${property.id})">
+        📞 Contact Landlord
+      </button>
+      <button class="btn-primary" onclick="event.stopPropagation(); showPropertyDetail(${property.id})">
+        👁️ View Details
+      </button>
     </div>
   `;
   
@@ -266,12 +290,15 @@ function renderPropertyDetail() {
 /**
  * Contact landlord
  */
-function contactLandlord() {
-  const property = AppState.selectedProperty;
-  if (!property) return;
+function contactLandlord(propertyId) {
+  if (!propertyId) {
+    const property = AppState.selectedProperty;
+    if (!property) return;
+    propertyId = property.id;
+  }
   
   const message = encodeURIComponent(
-    `Hi, I found your property on Propabridge (ID: ${property.id}). I'm interested in viewing it.`
+    `Hi! I'm interested in your property (ID: ${propertyId}) on Propabridge. Can we schedule a viewing?`
   );
   
   const whatsappUrl = `https://wa.me/2348055269579?text=${message}`;

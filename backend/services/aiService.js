@@ -3,7 +3,7 @@ const Property = require('../models/Property');
 const matchingService = require('./matchingService');
 
 // Initialize Google Gemini with API key from environment variables
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
 
 // In-memory conversation context (use Redis in production for scalability)
 const conversationContext = new Map();
@@ -104,6 +104,10 @@ const processMessage = async (message, phoneNumber) => {
  */
 const determineIntent = async (message, context = []) => {
   try {
+    if (!genAI) {
+      throw new Error('Gemini API key not configured. Please set GEMINI_API_KEY environment variable.');
+    }
+
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp"});
     
     // Build context string
@@ -137,9 +141,10 @@ const determineIntent = async (message, context = []) => {
     return validIntents.includes(intent) ? intent : 'other';
   } catch (error) {
     console.error('Error determining intent:', error);
-    return 'other';
+    throw error;
   }
 };
+
 
 /**
  * Extracts relevant entities from the user's message based on intent with context
@@ -152,6 +157,10 @@ const extractEntities = async (message, intent, context = []) => {
   if (!['search', 'show_more'].includes(intent)) return {};
 
   try {
+    if (!genAI) {
+      throw new Error('Gemini API key not configured. Please set GEMINI_API_KEY environment variable.');
+    }
+
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp"});
     
     // Build context string to inherit previous search criteria
@@ -204,9 +213,10 @@ const extractEntities = async (message, intent, context = []) => {
     return entities;
   } catch (error) {
     console.error('Error extracting entities:', error);
-    return {};
+    throw error;
   }
 };
+
 
 /**
  * Format property for WhatsApp message

@@ -213,7 +213,7 @@ const calculateMatchScore = (property, criteria) => {
  */
 const findMatches = async (criteria) => {
   try {
-    // Get properties from database using basic filters
+    // Get properties from database
     const properties = await Property.findByCriteria({
       location: criteria.location,
       maxPrice: criteria.maxPrice,

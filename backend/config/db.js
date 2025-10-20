@@ -14,7 +14,7 @@ let pool;
 if (connectionString) {
   pool = new Pool({
     connectionString,
-    ssl: isProduction ? { rejectUnauthorized: false } : false,
+    ssl: isProduction ? { rejectUnauthorized: false } : true,
   });
 } else if (
   process.env.PGHOST ||
@@ -29,7 +29,7 @@ if (connectionString) {
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
-    ssl: isProduction ? { rejectUnauthorized: false } : false,
+    ssl: isProduction ? { rejectUnauthorized: false } : true,
   });
 } else {
   // In production, fail fast if no configuration was provided to avoid implicit localhost attempts

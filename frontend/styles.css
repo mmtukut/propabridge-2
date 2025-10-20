@@ -635,6 +635,52 @@ body {
     color: rgba(255, 255, 255, 0.7);
 }
 
+/* Input Flow (align content below fixed nav and style inputs like index2.html) */
+.input-screen {
+    padding: 90px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.input-container {
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.input-field {
+    width: 100%;
+    height: 56px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 0 20px;
+    font-size: 17px;
+    color: #fff;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    position: relative;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #00C853;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+    box-shadow:
+        0 4px 16px rgba(0, 196, 83, 0.2),
+        0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+.input-field::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
 /* Find Property Screens */
 #find-step1, #find-step2, #find-processing, #find-results {
     padding: 20px;

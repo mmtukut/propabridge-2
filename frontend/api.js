@@ -5,7 +5,7 @@
 
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'https://propabridge-api.onrender.com/api/v1'
-  : '/api/v1';
+  : 'https://propabridge-api.onrender.com/api/v1';
 
 /**
  * Make API request with error handling

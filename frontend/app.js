@@ -206,13 +206,18 @@ function createPropertyCard(property, index) {
   // Format amenities
   const amenities = property.amenities ? property.amenities.slice(0, 3).join(' • ') : '';
   
+  // Use real image if available, otherwise show placeholder
+  const imageHtml = property.primaryImage 
+    ? `<img src="${property.primaryImage.image_url}" alt="${property.type}" class="property-img">`
+    : `<div class="image-placeholder">
+         <div class="image-icon">🏠</div>
+         <div class="image-text">Property ${property.id}</div>
+       </div>`;
+
   card.innerHTML = `
     <div class="property-image">
       ${verified}
-      <div class="image-placeholder">
-        <div class="image-icon">🏠</div>
-        <div class="image-text">Property ${property.id}</div>
-      </div>
+      ${imageHtml}
     </div>
     <div class="property-details">
       <div class="property-price">₦${parseFloat(property.price).toLocaleString()}/year</div>

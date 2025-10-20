@@ -48,13 +48,37 @@ class Property {
     }
 
     const result = await query(queryText, queryParams);
-    return result.rows;
+    const properties = result.rows;
+    
+    // Fetch primary images for all properties
+    for (const property of properties) {
+      const imageResult = await query(
+        'SELECT * FROM property_images WHERE property_id = $1 AND is_primary = true LIMIT 1',
+        [property.id]
+      );
+      property.primaryImage = imageResult.rows[0] || null;
+    }
+    
+    return properties;
   }
 
-  // Find a property by ID
+  // Find a property by ID with images
   static async findById(id) {
     const result = await query('SELECT * FROM properties WHERE id = $1', [id]);
-    return result.rows[0];
+    if (result.rows.length === 0) return null;
+    
+    const property = result.rows[0];
+    
+    // Fetch images for this property
+    const imagesResult = await query(
+      'SELECT * FROM property_images WHERE property_id = $1 ORDER BY is_primary DESC, uploaded_at ASC',
+      [id]
+    );
+    
+    property.images = imagesResult.rows;
+    property.primaryImage = imagesResult.rows.find(img => img.is_primary) || imagesResult.rows[0];
+    
+    return property;
   }
 
   // Create a new property
@@ -162,7 +186,18 @@ class Property {
 
     try {
       const result = await query(queryText, queryParams);
-      return result.rows;
+      const properties = result.rows;
+      
+      // Fetch primary images for all properties
+      for (const property of properties) {
+        const imageResult = await query(
+          'SELECT * FROM property_images WHERE property_id = $1 AND is_primary = true LIMIT 1',
+          [property.id]
+        );
+        property.primaryImage = imageResult.rows[0] || null;
+      }
+      
+      return properties;
     } catch (error) {
       console.error('Error in findByCriteria:', error);
       throw error;

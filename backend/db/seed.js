@@ -154,10 +154,30 @@ async function seedDatabase() {
       }
     }
     
+    // Add sample property images
+    console.log('📸 Adding sample property images...');
+    let totalImageCount = 0;
+    for (let i = 1; i <= Math.min(insertedCount, 20); i++) {
+      // Add 2-3 images per property
+      const imagesPerProperty = Math.floor(Math.random() * 2) + 2; // 2-3 images
+      for (let j = 0; j < imagesPerProperty; j++) {
+        const isPrimary = j === 0; // First image is primary
+        const imageUrl = `https://picsum.photos/800/600?random=${i}${j}`; // Random placeholder images
+        
+        await client.query(
+          `INSERT INTO property_images (property_id, image_url, is_primary) 
+           VALUES ($1, $2, $3)`,
+          [i, imageUrl, isPrimary]
+        );
+        totalImageCount++;
+      }
+    }
+    
     await client.query('COMMIT');
     console.log('\n✅ Database seeded successfully!');
     console.log(`   - ${insertedCount} properties created`);
     console.log(`   - ${Object.keys(userIds).length} users created`);
+    console.log(`   - ${totalImageCount} property images added`);
     console.log(`   - Ready for production!\n`);
   } catch (error) {
     await client.query('ROLLBACK');

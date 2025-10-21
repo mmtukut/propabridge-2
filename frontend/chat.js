@@ -78,28 +78,42 @@ async function sendMessage() {
     if (!ChatState.userPhone) {
       ChatState.userPhone = prompt('Please enter your phone number (e.g., +2348012345678)') || '+234';
     }
-    
+
     // Send to API
     const response = await API.chat.sendMessage(message, ChatState.userPhone);
-    
+
     // Hide typing indicator
     showTypingIndicator(false);
-    
-    // Add bot response to UI
-    if (response && response.response) {
+
+    // Handle different response types
+    if (response) {
       setTimeout(() => {
-        addMessageToUI(response.response, 'bot');
-        ChatState.messages.push({
-          text: response.response,
-          sender: 'bot',
-          timestamp: new Date()
-        });
+        if (response.type === 'property_results' && response.properties) {
+          // Handle property results
+          handlePropertyResults(response);
+        } else if (response.response) {
+          // Handle simple text response
+          addMessageToUI(response.response, 'bot');
+          ChatState.messages.push({
+            text: response.response,
+            sender: 'bot',
+            timestamp: new Date()
+          });
+        } else if (response.message) {
+          // Handle other structured responses
+          addMessageToUI(response.message, 'bot');
+          ChatState.messages.push({
+            text: response.message,
+            sender: 'bot',
+            timestamp: new Date()
+          });
+        }
       }, 500);
     }
   } catch (error) {
     console.error('Error sending message:', error);
     showTypingIndicator(false);
-    
+
     // Show error message
     setTimeout(() => {
       const errorMsg = 'Sorry, I\'m having trouble connecting. Please try again.';
@@ -179,6 +193,95 @@ function showTypingIndicator(show) {
 }
 
 /**
+ * Handle property results response
+ * @param {object} response - Backend response with properties
+ */
+function handlePropertyResults(response) {
+  const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+
+  // Add summary message
+  if (response.summary) {
+    addMessageToUI(response.summary, 'bot');
+  }
+
+  // Add each property as a card
+  if (response.properties && response.properties.length > 0) {
+    response.properties.slice(0, 3).forEach((property, index) => {
+      setTimeout(() => {
+        addPropertyCardToChat(property);
+      }, (index + 1) * 300); // Stagger the cards
+    });
+  }
+
+  // Update chat state
+  ChatState.messages.push({
+    text: response.summary || 'Property results',
+    sender: 'bot',
+    timestamp: new Date(),
+    type: 'property_results',
+    properties: response.properties
+  });
+}
+
+/**
+ * Add property card to chat
+ * @param {object} property - Property data
+ */
+function addPropertyCardToChat(property) {
+  const chatWindow = document.getElementById('chatWindow');
+  if (!chatWindow) return;
+
+  const cardDiv = document.createElement('div');
+  cardDiv.className = 'message bot';
+
+  const formattedPrice = formatPrice(property.price);
+  const specs = [];
+
+  if (property.area) specs.push(`${property.area}m²`);
+  if (property.bedrooms) specs.push(`${property.bedrooms} Bed`);
+  if (property.bathrooms) specs.push(`${property.bathrooms} Bath`);
+
+  cardDiv.innerHTML = `
+    <div class="property-card-chat" onclick="viewPropertyDetail(${property.id})">
+      <div class="property-image-chat">
+        ${property.verified ? '<div class="verified-badge-chat">✓ Verified</div>' : ''}
+        ${property.type || 'Property'}
+      </div>
+      <div class="property-details-chat">
+        <div class="property-price-chat">${formattedPrice}</div>
+        <div class="property-location-chat">${property.type} • ${property.location}</div>
+        ${specs.length > 0 ? `<div class="property-specs-chat">${specs.join(' • ')}</div>` : ''}
+        <div class="property-actions-chat">
+          <button class="property-action-btn" onclick="event.stopPropagation(); scheduleViewing(${property.id})">Schedule</button>
+          <button class="property-action-btn" onclick="event.stopPropagation(); viewPropertyDetail(${property.id})">View</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  chatWindow.appendChild(cardDiv);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+/**
+ * Format price for display
+ * @param {string|number} price - Raw price
+ * @returns {string} - Formatted price
+ */
+function formatPrice(price) {
+  const numPrice = parseFloat(price);
+  if (isNaN(numPrice)) return 'Price on request';
+
+  if (numPrice >= 1000000) {
+    return `₦${(numPrice / 1000000).toFixed(1)}M`;
+  } else if (numPrice >= 1000) {
+    return `₦${(numPrice / 1000).toFixed(0)}K`;
+  }
+  return `₦${numPrice.toLocaleString()}`;
+}
+
+/**
  * Handle quick reply button clicks
  * @param {string} replyText - Quick reply text
  */
@@ -254,6 +357,34 @@ if (originalShowScreen) {
   };
 }
 
+/**
+ * View property detail (navigate to property detail screen)
+ * @param {number} propertyId - Property ID
+ */
+function viewPropertyDetail(propertyId) {
+  // Store the property ID for the detail screen
+  localStorage.setItem('selectedPropertyId', propertyId);
+  // Navigate to property detail screen
+  if (window.showScreen) {
+    window.showScreen('property-detail');
+  }
+}
+
+/**
+ * Schedule a viewing for a property
+ * @param {number} propertyId - Property ID
+ */
+function scheduleViewing(propertyId) {
+  // For now, just show an alert - this could be expanded to open a scheduling modal
+  alert(`Scheduling viewing for property #${propertyId}. This feature will be available soon!`);
+
+  // In a real implementation, this would:
+  // 1. Open a scheduling modal
+  // 2. Show available time slots
+  // 3. Send scheduling request to backend
+  // 4. Send confirmation via WhatsApp
+}
+
 // ===================================
 // EXPORT FUNCTIONS
 // ===================================
@@ -262,4 +393,6 @@ window.sendMessage = sendMessage;
 window.sendQuickReply = sendQuickReply;
 window.clearChat = clearChat;
 window.getChatState = getChatState;
+window.viewPropertyDetail = viewPropertyDetail;
+window.scheduleViewing = scheduleViewing;
 

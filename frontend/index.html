@@ -8,6 +8,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192x192.png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="icons.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -21,23 +22,33 @@
         <button class="menu-btn" onclick="toggleMenu()">⋯</button>
         <div class="menu-panel glass-intense" id="menuPanel">
             <div class="menu-item" onclick="showScreen('whatsapp')">
-                <span class="menu-icon">💬</span>
+                <svg class="menu-icon icon" viewBox="0 0 24 24">
+                    <use href="#icon-chat"></use>
+                </svg>
                 <span>WhatsApp Bot</span>
             </div>
             <div class="menu-item" onclick="showScreen('market')">
-                <span class="menu-icon">📊</span>
+                <svg class="menu-icon icon" viewBox="0 0 24 24">
+                    <use href="#icon-market"></use>
+                </svg>
                 <span>Market Data</span>
             </div>
             <div class="menu-item" onclick="showScreen('find-step1')">
-                <span class="menu-icon">🔍</span>
+                <svg class="menu-icon icon" viewBox="0 0 24 24">
+                    <use href="#icon-search"></use>
+                </svg>
                 <span>Find Property</span>
             </div>
             <div class="menu-item" onclick="showScreen('list-step1')">
-                <span class="menu-icon">➕</span>
+                <svg class="menu-icon icon" viewBox="0 0 24 24">
+                    <use href="#icon-plus"></use>
+                </svg>
                 <span>List Property</span>
             </div>
             <div class="menu-item" onclick="alert('Support: +234 805 526 9579')">
-                <span class="menu-icon">🛠️</span>
+                <svg class="menu-icon icon" viewBox="0 0 24 24">
+                    <use href="#icon-support"></use>
+                </svg>
                 <span>Support</span>
             </div>
         </div>
@@ -88,57 +99,59 @@
     <!-- AI Processing -->
     <div class="screen" id="find-processing">
         <div class="processing-container">
-            <div class="ai-icon">🤖</div>
+            <svg class="ai-icon icon-xl icon-animated" viewBox="0 0 24 24">
+                <use href="#icon-robot"></use>
+            </svg>
             <h2 class="processing-title">AI is analyzing</h2>
             <p class="processing-subtitle">Scanning 2,847 verified properties</p>
-            
-            <div class="progress-item glass completed">✓ Location: Wuse 2 area</div>
-            <div class="progress-item glass completed">✓ Budget: ₦2-3M range</div>
-            <div class="progress-item glass">⏳ Features: Parking, Gated</div>
+
+            <div class="progress-steps" id="progressSteps">
+                <div class="progress-item glass" data-step="1">
+                    <svg class="icon icon-loading" viewBox="0 0 24 24">
+                        <use href="#icon-loading"></use>
+                    </svg>
+                    <span>Analyzing your requirements...</span>
+                </div>
+                <div class="progress-item glass" data-step="2">
+                    <svg class="icon icon-loading" viewBox="0 0 24 24">
+                        <use href="#icon-loading"></use>
+                    </svg>
+                    <span>Extracting location and preferences...</span>
+                </div>
+                <div class="progress-item glass" data-step="3">
+                    <svg class="icon icon-loading" viewBox="0 0 24 24">
+                        <use href="#icon-loading"></use>
+                    </svg>
+                    <span>Searching matching properties...</span>
+                </div>
+                <div class="progress-item glass" data-step="4">
+                    <svg class="icon icon-loading" viewBox="0 0 24 24">
+                        <use href="#icon-loading"></use>
+                    </svg>
+                    <span>Calculating match scores...</span>
+                </div>
+                <div class="progress-item glass" data-step="5">
+                    <svg class="icon icon-loading" viewBox="0 0 24 24">
+                        <use href="#icon-loading"></use>
+                    </svg>
+                    <span>Finalizing results...</span>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Results -->
     <div class="screen" id="find-results">
         <div class="results-container">
-            <div class="ai-summary">
+            <div class="ai-summary" id="resultsSummary">
+                <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                    <use href="#icon-star"></use>
+                </svg>
                 <strong>Perfect Match Found</strong><br>
                 3 properties match your needs. First one scores 96/100 — below market price.
             </div>
-            
-            <div class="property-card" onclick="showScreen('property-detail')">
-                <div class="property-image">
-                    <div class="verified-badge">Verified</div>
-                    Property Image
-                </div>
-                <div class="property-details">
-                    <div class="property-price">₦2,500,000/year</div>
-                    <div class="property-location">3 Bed Flat • Wuse 2, Abuja</div>
-                    <div class="property-specs">
-                        <span>180m²</span>
-                        <span>2 Parking</span>
-                        <span>24/7 Power</span>
-                    </div>
-                    <div class="match-score">Match: 96%</div>
-                </div>
-            </div>
-            
-            <div class="property-card">
-                <div class="property-image">
-                    <div class="verified-badge">Verified</div>
-                    Property Image
-                </div>
-                <div class="property-details">
-                    <div class="property-price">₦2,800,000/year</div>
-                    <div class="property-location">3 Bed Flat • Wuse 2, Abuja</div>
-                    <div class="property-specs">
-                        <span>200m²</span>
-                        <span>2 Parking</span>
-                        <span>Solar</span>
-                    </div>
-                    <div class="match-score">Match: 88%</div>
-                </div>
-            </div>
+
+            <!-- Property cards will be dynamically generated here -->
         </div>
     </div>
     
@@ -163,35 +176,86 @@
                     <h2 class="property-title-detail">Luxury Apartment</h2>
                     <div class="property-price-detail">₦2,500,000<span class="price-period-detail">/year</span></div>
                 </div>
-                <div class="property-location-detail">📍 Plot 234, Aminu Kano Crescent, Wuse 2, Abuja</div>
+                <div class="property-location-detail">
+                    <svg class="icon icon-sm icon-secondary" viewBox="0 0 24 24">
+                        <use href="#icon-location"></use>
+                    </svg>
+                    <span>Plot 234, Aminu Kano Crescent, Wuse 2, Abuja</span>
+                </div>
                 <div class="property-specs-detail">
-                    <span class="spec-item">📐 180m²</span>
-                    <span class="spec-item">🛏️ 3 Bedrooms</span>
-                    <span class="spec-item">🚿 2 Bathrooms</span>
-                    <span class="spec-item">🅿️ 2 Parking</span>
-                    <span class="spec-item">⚡ 24/7 Power</span>
-                    <span class="spec-item">🔐 Gated Community</span>
+                    <span class="spec-item">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <use href="#icon-area"></use>
+                        </svg>
+                        180m²
+                    </span>
+                    <span class="spec-item">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <use href="#icon-bed"></use>
+                        </svg>
+                        3 Bedrooms
+                    </span>
+                    <span class="spec-item">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <use href="#icon-bath"></use>
+                        </svg>
+                        2 Bathrooms
+                    </span>
+                    <span class="spec-item">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <use href="#icon-parking"></use>
+                        </svg>
+                        2 Parking
+                    </span>
+                    <span class="spec-item">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <use href="#icon-power"></use>
+                        </svg>
+                        24/7 Power
+                    </span>
+                    <span class="spec-item">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <use href="#icon-security"></use>
+                        </svg>
+                        Gated Community
+                    </span>
                 </div>
             </div>
 
             <div class="verification-panel glass">
-                <h3 class="verification-title">✓ Fully Verified Property</h3>
+                <h3 class="verification-title">
+                    <svg class="icon icon-sm icon-success" viewBox="0 0 24 24">
+                        <use href="#icon-verified"></use>
+                    </svg>
+                    <span>Fully Verified Property</span>
+                </h3>
                 <div class="verification-item">
-                    <span class="check-icon">✓</span>
+                    <svg class="icon icon-check icon-success" viewBox="0 0 24 24">
+                        <use href="#icon-check"></use>
+                    </svg>
                     <span>Title Documents Verified</span>
                 </div>
                 <div class="verification-item">
-                    <span class="check-icon">✓</span>
+                    <svg class="icon icon-check icon-success" viewBox="0 0 24 24">
+                        <use href="#icon-check"></use>
+                    </svg>
                     <span>Physical Inspection Complete</span>
                 </div>
                 <div class="verification-item">
-                    <span class="check-icon">✓</span>
+                    <svg class="icon icon-check icon-success" viewBox="0 0 24 24">
+                        <use href="#icon-check"></use>
+                    </svg>
                     <span>Owner Identity Confirmed</span>
                 </div>
             </div>
 
             <div class="ai-summary glass">
-                <h4 class="ai-summary-title">🎯 Why AI Recommends This</h4>
+                <h4 class="ai-summary-title">
+                    <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                        <use href="#icon-star"></use>
+                    </svg>
+                    <span>Why AI Recommends This</span>
+                </h4>
                 <ul class="ai-summary-list">
                     <li>15% below market average</li>
                     <li>Landlord responds within 2 hours</li>
@@ -204,15 +268,21 @@
         <div class="contact-actions glass">
             <div class="action-buttons">
                 <button class="btn-secondary action-btn" onclick="scheduleViewing()">
-                    <span class="btn-icon">📅</span>
+                    <svg class="btn-icon icon" viewBox="0 0 24 24">
+                        <use href="#icon-calendar"></use>
+                    </svg>
                     <span>Schedule Viewing</span>
                 </button>
                 <button class="btn-primary action-btn" onclick="contactLandlord()">
-                    <span class="btn-icon">📞</span>
+                    <svg class="btn-icon icon" viewBox="0 0 24 24">
+                        <use href="#icon-phone"></use>
+                    </svg>
                     <span>Contact Landlord</span>
                 </button>
                 <button class="btn-secondary action-btn" onclick="shareProperty()">
-                    <span class="btn-icon">📤</span>
+                    <svg class="btn-icon icon" viewBox="0 0 24 24">
+                        <use href="#icon-share"></use>
+                    </svg>
                     <span>Share Property</span>
                 </button>
             </div>
@@ -251,12 +321,22 @@
 
             <div class="listing-form">
                 <div class="form-section">
-                    <h3 class="section-title">📍 Property Location</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-location"></use>
+                        </svg>
+                        <span>Property Location</span>
+                    </h3>
                     <input type="text" class="input-field" placeholder="Full property address" id="propertyAddress" value="Plot 456, Gwarinpa, Abuja" required>
                 </div>
 
                 <div class="form-section">
-                    <h3 class="section-title">📱 Contact Information</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-phone"></use>
+                        </svg>
+                        <span>Contact Information</span>
+                    </h3>
                     <input type="tel" class="input-field" placeholder="Your WhatsApp number" id="contactPhone" value="+234 805 526 9579" required>
                 </div>
 
@@ -301,7 +381,9 @@
             <div class="photo-upload-section">
                 <div class="upload-zone" id="photoUploadZone">
                     <div class="upload-content">
-                        <div class="upload-icon">📸</div>
+                        <svg class="upload-icon icon-xl icon-secondary" viewBox="0 0 24 24">
+                            <use href="#icon-camera"></use>
+                        </svg>
                         <div class="upload-text">Click to upload photos</div>
                         <div class="upload-subtext">or drag and drop</div>
                         <input type="file" id="photoInput" multiple accept="image/*" style="display: none;">
@@ -313,7 +395,12 @@
                 </div>
 
                 <div class="upload-tips">
-                    <h4>📋 Photo Tips:</h4>
+                    <h4>
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-list"></use>
+                        </svg>
+                        <span>Photo Tips:</span>
+                    </h4>
                     <ul>
                         <li>Upload at least 3 high-quality photos</li>
                         <li>Include exterior, interior, and key features</li>
@@ -362,37 +449,59 @@
 
             <div class="listing-form">
                 <div class="form-section">
-                    <h3 class="section-title">🏠 Property Type</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-house"></use>
+                        </svg>
+                        <span>Property Type</span>
+                    </h3>
                     <div class="property-type-grid">
                         <div class="type-option selected" data-type="apartment">
-                            <div class="type-icon">🏢</div>
+                            <svg class="type-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-apartment"></use>
+                            </svg>
                             <div class="type-name">Apartment</div>
                         </div>
                         <div class="type-option" data-type="house">
-                            <div class="type-icon">🏠</div>
+                            <svg class="type-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-house"></use>
+                            </svg>
                             <div class="type-name">House</div>
                         </div>
                         <div class="type-option" data-type="duplex">
-                            <div class="type-icon">🏘️</div>
+                            <svg class="type-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-duplex"></use>
+                            </svg>
                             <div class="type-name">Duplex</div>
                         </div>
                         <div class="type-option" data-type="penthouse">
-                            <div class="type-icon">🏛️</div>
+                            <svg class="type-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-penthouse"></use>
+                            </svg>
                             <div class="type-name">Penthouse</div>
                         </div>
                         <div class="type-option" data-type="studio">
-                            <div class="type-icon">🏠</div>
+                            <svg class="type-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-studio"></use>
+                            </svg>
                             <div class="type-name">Studio</div>
                         </div>
                         <div class="type-option" data-type="other">
-                            <div class="type-icon">🏗️</div>
+                            <svg class="type-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-commercial"></use>
+                            </svg>
                             <div class="type-name">Other</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h3 class="section-title">🛏️ Bedrooms</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-bed"></use>
+                        </svg>
+                        <span>Bedrooms</span>
+                    </h3>
                     <div class="bedroom-grid">
                         <div class="bedroom-option" data-bedrooms="1">1 Bed</div>
                         <div class="bedroom-option selected" data-bedrooms="2">2 Bed</div>
@@ -403,18 +512,29 @@
                 </div>
 
                 <div class="form-section">
-                    <h3 class="section-title">💰 Listing Type & Price</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-market"></use>
+                        </svg>
+                        <span>Listing Type & Price</span>
+                    </h3>
                     <div class="listing-type-grid">
                         <div class="listing-option selected" data-listing-type="rent">
-                            <div class="listing-icon">🏠</div>
+                            <svg class="listing-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-house"></use>
+                            </svg>
                             <div class="listing-name">For Rent</div>
                         </div>
                         <div class="listing-option" data-listing-type="sale">
-                            <div class="listing-icon">💰</div>
+                            <svg class="listing-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-market"></use>
+                            </svg>
                             <div class="listing-name">For Sale</div>
                         </div>
                         <div class="listing-option" data-listing-type="shortlet">
-                            <div class="listing-icon">⏰</div>
+                            <svg class="listing-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-calendar"></use>
+                            </svg>
                             <div class="listing-name">Short Let</div>
                         </div>
                     </div>
@@ -422,7 +542,12 @@
                 </div>
 
                 <div class="form-section">
-                    <h3 class="section-title">📐 Property Size</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-area"></use>
+                        </svg>
+                        <span>Property Size</span>
+                    </h3>
                     <div class="size-inputs">
                         <input type="number" class="input-field" placeholder="Area (sqm)" id="propertyArea" value="180" min="1">
                         <input type="number" class="input-field" placeholder="Bathrooms" id="propertyBathrooms" value="2" min="1">
@@ -430,45 +555,79 @@
                 </div>
 
                 <div class="form-section">
-                    <h3 class="section-title">✨ Features & Amenities</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-star"></use>
+                        </svg>
+                        <span>Features & Amenities</span>
+                    </h3>
                     <div class="amenities-grid">
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="24/7 Power" checked>
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-power"></use>
+                            </svg>
                             <span class="amenity-label">24/7 Power</span>
                         </label>
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="Security" checked>
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-security"></use>
+                            </svg>
                             <span class="amenity-label">Security</span>
                         </label>
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="Parking" checked>
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-parking"></use>
+                            </svg>
                             <span class="amenity-label">Parking</span>
                         </label>
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="Gym">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-gym"></use>
+                            </svg>
                             <span class="amenity-label">Gym</span>
                         </label>
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="Pool" checked>
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-pool"></use>
+                            </svg>
                             <span class="amenity-label">Swimming Pool</span>
                         </label>
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="Garden">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-water"></use>
+                            </svg>
                             <span class="amenity-label">Garden</span>
                         </label>
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="Balcony">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-area"></use>
+                            </svg>
                             <span class="amenity-label">Balcony</span>
                         </label>
                         <label class="amenity-item">
                             <input type="checkbox" class="amenity-checkbox" value="Furnished">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <use href="#icon-house"></use>
+                            </svg>
                             <span class="amenity-label">Furnished</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h3 class="section-title">📝 Additional Description</h3>
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-list"></use>
+                        </svg>
+                        <span>Additional Description</span>
+                    </h3>
                     <textarea class="input-field text-area" placeholder="Describe your property, neighborhood, and any special features..." id="propertyDescription" rows="4">24/7 power, water, gated compound, gym, pool</textarea>
                 </div>
 
@@ -512,7 +671,12 @@
 
             <div class="review-section">
                 <div class="review-card">
-                    <h3 class="review-title">📋 Summary</h3>
+                    <h3 class="review-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-list"></use>
+                        </svg>
+                        <span>Summary</span>
+                    </h3>
                     <div class="review-item">
                         <span class="review-label">Address:</span>
                         <span class="review-value" id="reviewAddress">-</span>
@@ -540,7 +704,12 @@
                 </div>
 
                 <div class="review-card">
-                    <h3 class="review-title">📸 Photos</h3>
+                    <h3 class="review-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-camera"></use>
+                        </svg>
+                        <span>Photos</span>
+                    </h3>
                     <div class="review-photos" id="reviewPhotos">
                         <div class="no-photos">No photos uploaded yet</div>
                     </div>
@@ -561,10 +730,17 @@
     <div class="screen" id="list-success">
         <div class="success-container">
             <div class="success-animation">
-                <div class="success-icon">✓</div>
+                <svg class="success-icon icon-xl icon-success" viewBox="0 0 24 24">
+                    <use href="#icon-verified"></use>
+                </svg>
                 <div class="success-ring"></div>
             </div>
-            <h2 class="success-title">🎉 Property Listed Successfully!</h2>
+            <h2 class="success-title">
+                <svg class="icon icon-sm icon-success" viewBox="0 0 24 24">
+                    <use href="#icon-star"></use>
+                </svg>
+                <span>Property Listed Successfully!</span>
+            </h2>
             <p class="success-subtitle">Your property is now live and visible to thousands of potential buyers.</p>
 
             <div class="success-details">
@@ -572,21 +748,33 @@
                     <h3>What happens next?</h3>
                     <div class="success-timeline">
                         <div class="timeline-item">
-                            <div class="timeline-dot">1</div>
+                            <div class="timeline-dot">
+                                <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                    <use href="#icon-robot"></use>
+                                </svg>
+                            </div>
                             <div class="timeline-content">
                                 <h4>AI Review</h4>
                                 <p>Our AI will optimize your listing for better visibility</p>
                             </div>
                         </div>
                         <div class="timeline-item">
-                            <div class="timeline-dot">2</div>
+                            <div class="timeline-dot">
+                                <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                    <use href="#icon-verified"></use>
+                                </svg>
+                            </div>
                             <div class="timeline-content">
                                 <h4>Verification</h4>
                                 <p>We'll verify your property details within 24 hours</p>
                             </div>
                         </div>
                         <div class="timeline-item">
-                            <div class="timeline-dot">3</div>
+                            <div class="timeline-dot">
+                                <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                    <use href="#icon-view"></use>
+                                </svg>
+                            </div>
                             <div class="timeline-content">
                                 <h4>Live Listing</h4>
                                 <p>Your property goes live and starts receiving inquiries</p>
@@ -607,13 +795,21 @@
     <div class="screen" id="whatsapp">
         <div class="whatsapp-container">
             <div class="chat-header">
-                <h2 class="step-title">WhatsApp Property Bot</h2>
+                <h2 class="step-title">
+                    <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                        <use href="#icon-chat"></use>
+                    </svg>
+                    <span>WhatsApp Property Bot</span>
+                </h2>
                 <p class="step-subtitle" style="font-size: 15px; opacity: 0.6; margin-top: 8px;">Get instant property matches via chat</p>
             </div>
             <div class="chat-window" id="chatWindow">
                 <div class="message bot">
                     <div class="message-bubble">
-                        👋 Hi! I'm your Propabridge assistant.<br><br>
+                        <svg class="icon icon-sm" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 0.25em;">
+                            <use href="#icon-robot"></use>
+                        </svg>
+                        Hi! I'm your Propabridge assistant.<br><br>
                         I can help you find the perfect property! Try asking:<br><br>
                         • "I need a 3 bedroom flat in Wuse 2"<br>
                         • "Show me houses under ₦2M in Abuja"<br>
@@ -633,23 +829,43 @@
     <div class="screen" id="market">
         <div class="input-screen">
             <div class="step-header">
-                <h2 class="step-title">Market Intelligence</h2>
+                <h2 class="step-title">
+                    <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                        <use href="#icon-market"></use>
+                    </svg>
+                    <span>Market Intelligence</span>
+                </h2>
                 <p class="step-subtitle">Live data from 2,847 properties</p>
             </div>
             <div class="input-container">
                 <div class="verification-panel">
-                    <h3 style="margin-bottom:16px;">Wuse 2 - Your Area</h3>
+                    <h3 style="margin-bottom:16px;">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-location"></use>
+                        </svg>
+                        <span>Wuse 2 - Your Area</span>
+                    </h3>
                     <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                         <span>Avg 3-Bed Price</span>
                         <strong>₦2.5M</strong>
                     </div>
                     <div style="display:flex; justify-content:space-between;">
                         <span>vs Last Month</span>
-                        <strong style="color:#00C853;">↑ 12%</strong>
+                        <strong style="color:#00C853;">
+                            <svg class="icon icon-sm icon-success" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 0.25em;">
+                                <use href="#icon-arrow-right"></use>
+                            </svg>
+                            12%
+                        </strong>
                     </div>
                 </div>
                 <div class="ai-summary">
-                    <strong>AI Prediction</strong><br>
+                    <strong>
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-robot"></use>
+                        </svg>
+                        <span>AI Prediction</span>
+                    </strong><br>
                     Prices likely to increase 5-8% in next 30 days. Best time to rent: Now.
                 </div>
             </div>
@@ -1014,5 +1230,181 @@
         });
       }
     </script>
+
+    <!-- SVG Icons -->
+    <svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+      <!-- Navigation Icons -->
+      <symbol id="icon-home" viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </symbol>
+
+      <symbol id="icon-search" viewBox="0 0 24 24">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </symbol>
+
+      <symbol id="icon-chat" viewBox="0 0 24 24">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+      </symbol>
+
+      <symbol id="icon-phone" viewBox="0 0 24 24">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </symbol>
+
+      <symbol id="icon-plus" viewBox="0 0 24 24">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+      </symbol>
+
+      <symbol id="icon-list" viewBox="0 0 24 24">
+        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+      </symbol>
+
+      <symbol id="icon-market" viewBox="0 0 24 24">
+        <path d="M7,18c-1.1,0-2,0.9-2,2s0.9,2,2,2s2-0.9,2-2S8.1,18,7,18z M1,2v2h2l3.6,7.59l-1.35,2.45c-0.16,0.28-0.25,0.61-0.25,0.96c0,1.1,0.9,2,2,2h12v-2H7.42c-0.14,0-0.25-0.11-0.25-0.25l0.03-0.12L8.1,13h7.45c0.75,0,1.41-0.41,1.75-1.03L21.7,4H5.21l-0.94-2H1z M17,18c-1.1,0-2,0.9-2,2s0.9,2,2,2s2-0.9,2-2S18.1,18,17,18z"/>
+      </symbol>
+
+      <symbol id="icon-support" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+      </symbol>
+
+      <!-- Property Icons -->
+      <symbol id="icon-bed" viewBox="0 0 24 24">
+        <path d="M20 10V7c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v3c-1.1 0-2 .9-2 2v5h1.33l1.12 1.12c.19.19.44.29.7.29h.15c.15 0 .3-.05.44-.15l.15-.15c.29-.29.29-.77 0-1.06l-.74-.74.4-.4c.29-.29.29-.77 0-1.06l-.4-.4.74-.74c.29-.29.29-.77 0-1.06l-.15-.15c-.14-.14-.29-.15-.44-.15H6.7c-.26 0-.51.1-.7.29L4.67 9H20z"/>
+      </symbol>
+
+      <symbol id="icon-bath" viewBox="0 0 24 24">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H6V8h12v8z"/>
+      </symbol>
+
+      <symbol id="icon-area" viewBox="0 0 24 24">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </symbol>
+
+      <symbol id="icon-location" viewBox="0 0 24 24">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </symbol>
+
+      <symbol id="icon-verified" viewBox="0 0 24 24">
+        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+        <path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+      </symbol>
+
+      <symbol id="icon-star" viewBox="0 0 24 24">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+      </symbol>
+
+      <!-- Action Icons -->
+      <symbol id="icon-calendar" viewBox="0 0 24 24">
+        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+      </symbol>
+
+      <symbol id="icon-view" viewBox="0 0 24 24">
+        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+      </symbol>
+
+      <symbol id="icon-share" viewBox="0 0 24 24">
+        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+      </symbol>
+
+      <symbol id="icon-contact" viewBox="0 0 24 24">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </symbol>
+
+      <!-- Feature Icons -->
+      <symbol id="icon-parking" viewBox="0 0 24 24">
+        <path d="M13 3H6v18h4v-6h3c3.31 0 6-2.69 6-6s-2.69-6-6-6zm.2 8H10V7h3.2c1.1 0 2 .9 2 2s-.9 2-2 2z"/>
+      </symbol>
+
+      <symbol id="icon-power" viewBox="0 0 24 24">
+        <path d="M7 2v11h3v9l7-12h-4l3-8z"/>
+      </symbol>
+
+      <symbol id="icon-security" viewBox="0 0 24 24">
+        <path d="M18 11c0-4.41-3.59-8-8-8s-8 3.59-8 8c0 1.57.46 3.03 1.24 4.26L6 18.05l1.76-1.76c.8.48 1.71.71 2.65.71 2.76 0 5-2.24 5-5z"/>
+      </symbol>
+
+      <symbol id="icon-pool" viewBox="0 0 24 24">
+        <path d="M2 21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1H3c-.55 0-1 .45-1 1zM21 16H3c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h18c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1zM8 5c0-1.66-1.34-3-3-3S2 3.34 2 5c0 1.4.94 2.57 2.19 2.89C4.8 8.55 5.5 9.23 5.5 10v1c0 .55.45 1 1 1s1-.45 1-1V10c0-.77.7-1.45 1.31-2.11C9.06 7.57 10 6.4 10 5c0-1.66-1.34-3-3-3z"/>
+      </symbol>
+
+      <symbol id="icon-gym" viewBox="0 0 24 24">
+        <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 10.86 5.57 9.43 4 7.99 5.44 6.56 6.87 6.56 8.31 7.99 9.75 9.43 11.19 12 13.76l2.57 2.57z"/>
+      </symbol>
+
+      <symbol id="icon-water" viewBox="0 0 24 24">
+        <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zM12 18.2c-2.13 0-3.8-1.67-3.8-3.8 0-1.11.47-2.18 1.29-3.04C10.31 10.5 11.17 10 12 10s1.69.5 2.51 1.36c.82.86 1.29 1.93 1.29 3.04 0 2.13-1.67 3.8-3.8 3.8z"/>
+      </symbol>
+
+      <symbol id="icon-bq" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        <path d="M8 10h2v4H8zm4-2h2v6h-2z"/>
+      </symbol>
+
+      <!-- UI Icons -->
+      <symbol id="icon-back" viewBox="0 0 24 24">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </symbol>
+
+      <symbol id="icon-menu" viewBox="0 0 24 24">
+        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+      </symbol>
+
+      <symbol id="icon-close" viewBox="0 0 24 24">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      </symbol>
+
+      <symbol id="icon-check" viewBox="0 0 24 24">
+        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+      </symbol>
+
+      <symbol id="icon-arrow-right" viewBox="0 0 24 24">
+        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+      </symbol>
+
+      <symbol id="icon-arrow-left" viewBox="0 0 24 24">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </symbol>
+
+      <!-- Property Type Icons -->
+      <symbol id="icon-apartment" viewBox="0 0 24 24">
+        <path d="M17 11V3H7v8H3v10h4v-4h10v4h4V11h-4z"/>
+      </symbol>
+
+      <symbol id="icon-house" viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </symbol>
+
+      <symbol id="icon-duplex" viewBox="0 0 24 24">
+        <path d="M16 7h2l-4-4-4 4h2v4h4V7zm-8 9h2v4H8v-4zm4 0h4v4h-4v-4z"/>
+      </symbol>
+
+      <symbol id="icon-penthouse" viewBox="0 0 24 24">
+        <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
+      </symbol>
+
+      <symbol id="icon-studio" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </symbol>
+
+      <symbol id="icon-commercial" viewBox="0 0 24 24">
+        <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2z"/>
+      </symbol>
+
+      <!-- Loading Icons -->
+      <symbol id="icon-loading" viewBox="0 0 24 24">
+        <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+      </symbol>
+
+      <symbol id="icon-robot" viewBox="0 0 24 24">
+        <path d="M12,2A2,2 0 0,1 14,4A2,2 0 0,1 12,6A2,2 0 0,1 10,4A2,2 0 0,1 12,2M21,9V7L15,1V3H9V1L3,7V9H5V12H3L1,14V16L3,18V21A1,1 0 0,0 4,22H20A1,1 0 0,0 21,21V18L23,16V14L21,12V9M7,10V12H5V10M19,10V12H17V10M12,19A7,7 0 0,1 5,12A7,7 0 0,1 12,5A7,7 0 0,1 19,12A7,7 0 0,1 12,19M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/>
+      </symbol>
+
+      <symbol id="icon-camera" viewBox="0 0 24 24">
+        <path d="M9,12C9,10.34 10.34,9 12,9C13.66,9 15,10.34 15,12C15,13.66 13.66,15 12,15C10.34,15 9,13.66 9,12M12,17C7.58,17 4,13.42 4,9C4,4.58 7.58,1 12,1C16.42,1 20,4.58 20,9C20,13.42 16.42,17 12,17M12,3C8.69,3 6,5.69 6,9C6,12.31 8.69,15 12,15C15.31,15 18,12.31 18,9C18,5.69 15.31,3 12,3Z"/>
+      </symbol>
+
+      <symbol id="icon-gallery" viewBox="0 0 24 24">
+        <path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z"/>
+      </symbol>
+    </svg>
 </body>
 </html>

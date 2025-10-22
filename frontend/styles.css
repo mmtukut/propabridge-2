@@ -214,7 +214,7 @@ body {
 }
 
 /* ===================================
-   BUTTONS
+   BUTTONS - ENHANCED DESIGN
    =================================== */
 
 .btn-primary {
@@ -226,18 +226,19 @@ body {
     font-size: 17px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 0 20px;
-    box-shadow: 
+    box-shadow:
         0 4px 20px rgba(0, 196, 83, 0.3),
         0 1px 0 rgba(255, 255, 255, 0.2) inset,
         0 -1px 0 rgba(0, 0, 0, 0.1) inset;
     position: relative;
     backdrop-filter: blur(1px);
+    min-width: 140px;
 }
 
 .btn-primary::before {
@@ -250,16 +251,29 @@ body {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
     border-radius: 16px;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.btn-primary:hover::before {
+    opacity: 1;
 }
 
 .btn-primary:active {
-    transform: scale(0.98);
+    transform: scale(0.98) translateY(1px);
     background: #00E676;
+    box-shadow:
+        0 2px 8px rgba(0, 196, 83, 0.4),
+        0 1px 0 rgba(255, 255, 255, 0.15) inset;
 }
 
 .btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none !important;
+    box-shadow:
+        0 2px 8px rgba(0, 196, 83, 0.1),
+        0 1px 0 rgba(255, 255, 255, 0.1) inset;
 }
 
 .btn-secondary {
@@ -272,16 +286,17 @@ body {
     font-size: 17px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 0 20px;
-    box-shadow: 
+    box-shadow:
         0 4px 20px rgba(0, 0, 0, 0.1),
         0 1px 0 rgba(255, 255, 255, 0.1) inset;
     position: relative;
+    min-width: 140px;
 }
 
 .btn-secondary::before {
@@ -294,12 +309,18 @@ body {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
     border-radius: 16px;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.btn-secondary:hover::before {
+    opacity: 1;
 }
 
 .btn-secondary:active {
-    transform: scale(0.98);
+    transform: scale(0.98) translateY(1px);
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
-    box-shadow: 
+    box-shadow:
         0 2px 10px rgba(0, 0, 0, 0.15),
         0 1px 0 rgba(255, 255, 255, 0.15) inset;
 }
@@ -447,6 +468,91 @@ body {
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+/* ===================================
+   ICON SYSTEM ENHANCEMENTS
+   =================================== */
+
+.ai-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 200, 83, 0.1);
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin-bottom: 24px;
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+        background: rgba(0, 200, 83, 0.1);
+    }
+    50% {
+        transform: scale(1.05);
+        background: rgba(0, 200, 83, 0.15);
+    }
+}
+
+/* Progress items with icons */
+.progress-item {
+    padding: 16px;
+    margin-bottom: 12px;
+    max-width: 300px;
+    width: 100%;
+    transition: all 0.3s ease;
+    text-align: left;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-item.completed {
+    border-color: #00C853;
+    background: rgba(0, 200, 83, 0.1);
+}
+
+.progress-item.loading {
+    border-color: #007AFF;
+    background: rgba(0, 122, 255, 0.1);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.progress-item .icon {
+    flex-shrink: 0;
+}
+
+/* No results state */
+.no-results {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.no-results h3 {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 16px 0 8px 0;
+}
+
+.no-results p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
 }
 
 /* ===================================
@@ -841,32 +947,74 @@ body {
 .results-container {
     max-width: 600px;
     margin: 0 auto;
+    padding: 20px;
 }
 
 .ai-summary {
     background: rgba(0, 122, 255, 0.1);
     border: 1px solid rgba(0, 122, 255, 0.2);
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 16px;
+    padding: 20px;
     margin-bottom: 24px;
     color: white;
     font-size: 16px;
     line-height: 1.5;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideInUp 0.6s ease-out;
+}
+
+.ai-summary .icon {
+    vertical-align: middle;
+    margin-right: 0.5em;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .property-card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 20px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardSlideIn 0.6s ease-out forwards;
+}
+
+.property-card:nth-child(1) { animation-delay: 0.1s; }
+.property-card:nth-child(2) { animation-delay: 0.2s; }
+.property-card:nth-child(3) { animation-delay: 0.3s; }
+.property-card:nth-child(4) { animation-delay: 0.4s; }
+.property-card:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .property-card:hover {
     background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .property-amenities {
@@ -1070,6 +1218,13 @@ body {
     display: flex;
     gap: 12px;
     margin-top: 24px;
+    width: 100%;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    width: 100%;
 }
 
 /* Success Screen */
@@ -1718,38 +1873,218 @@ body {
     border-radius: 8px;
 }
 
-/* Responsive Design */
-@media (max-width: 480px) {
+/* ===================================
+   RESPONSIVE DESIGN - MOBILE FIRST
+   =================================== */
+
+@media (max-width: 768px) {
+    /* Navigation adjustments */
+    .nav {
+        padding: 16px;
+        height: 80px;
+    }
+
+    /* Button responsiveness */
+    .btn-primary, .btn-secondary {
+        height: 52px;
+        font-size: 16px;
+        padding: 0 16px;
+        min-width: 120px;
+    }
+
+    /* Action buttons stacking */
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-btn {
+        height: 48px;
+        font-size: 15px;
+    }
+
+    /* Property cards responsive */
+    .property-card {
+        margin: 0 -20px 20px -20px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .property-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .property-action-btn {
+        height: 44px;
+        font-size: 14px;
+        padding: 0 16px;
+    }
+
+    /* Contact actions fixed positioning */
+    .contact-actions {
+        padding: 16px;
+        gap: 10px;
+    }
+
+    /* Listing form responsive */
     .listing-container {
         padding: 90px 16px 40px;
     }
 
     .property-type-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .type-option {
+        padding: 12px 8px;
     }
 
     .bedroom-grid {
         flex-direction: column;
+        gap: 8px;
+    }
+
+    .bedroom-option {
+        padding: 12px 16px;
+        font-size: 14px;
     }
 
     .listing-type-grid {
         flex-direction: column;
+        gap: 10px;
+    }
+
+    .listing-option {
+        padding: 16px 12px;
     }
 
     .size-inputs {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .amenities-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .amenity-item {
+        padding: 12px 8px;
     }
 
     .form-actions {
         flex-direction: column;
+        gap: 12px;
+        margin-top: 24px;
     }
 
     .success-actions {
         flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Chat responsive */
+    .chat-window {
+        height: 300px;
+        padding: 16px;
+    }
+
+    .whatsapp-container {
+        padding: 90px 16px 40px;
+    }
+
+    /* Input screens */
+    .input-screen {
+        padding: 90px 16px 40px;
+    }
+
+    /* Progress items responsive */
+    .progress-item {
+        max-width: 100%;
+        margin: 0 -20px 12px -20px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 16px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small screens */
+    .btn-primary, .btn-secondary {
+        height: 48px;
+        font-size: 15px;
+        padding: 0 12px;
+        min-width: 100px;
+    }
+
+    .action-btn {
+        height: 44px;
+        font-size: 14px;
+        padding: 0 12px;
+    }
+
+    .property-action-btn {
+        height: 40px;
+        font-size: 13px;
+        padding: 0 12px;
+    }
+
+    /* Typography adjustments */
+    .brand {
+        font-size: 18px;
+    }
+
+    .tagline {
+        font-size: 20px;
+    }
+
+    .subtitle {
+        font-size: 15px;
+    }
+
+    .step-title {
+        font-size: 20px;
+    }
+
+    .step-subtitle {
+        font-size: 14px;
+    }
+
+    /* Form elements */
+    .input-field {
+        height: 48px;
+        font-size: 16px;
+        padding: 0 16px;
+    }
+
+    .text-area {
+        min-height: 80px;
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+
+    /* Grid adjustments */
+    .property-type-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Menu panel */
+    .menu-panel {
+        width: calc(100vw - 40px);
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    /* Contact actions */
+    .contact-actions {
+        left: 10px;
+        right: 10px;
+        max-width: none;
     }
 }
 
@@ -1955,6 +2290,7 @@ body {
     backdrop-filter: blur(20px);
     padding: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
 }
 
 .action-buttons {
@@ -1962,6 +2298,7 @@ body {
     gap: 12px;
     max-width: 600px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .action-btn {

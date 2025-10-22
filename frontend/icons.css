@@ -1,0 +1,163 @@
+/* ===================================
+   SVG ICON SYSTEM
+   Professional icons for Propabridge
+   =================================== */
+
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: middle;
+}
+
+.icon-sm {
+    width: 0.875em;
+    height: 0.875em;
+}
+
+.icon-lg {
+    width: 1.25em;
+    height: 1.25em;
+}
+
+.icon-xl {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+/* Icon Button Styles */
+.btn-icon {
+    display: inline-block;
+    width: 1.25em;
+    height: 1.25em;
+    fill: currentColor;
+    vertical-align: middle;
+    margin-right: 0.5em;
+}
+
+/* Navigation Icons */
+.menu-icon {
+    display: inline-block;
+    width: 1.25em;
+    height: 1.25em;
+    fill: currentColor;
+    vertical-align: middle;
+    margin-right: 0.75em;
+}
+
+/* Property Feature Icons */
+.spec-item .icon,
+.property-specs .icon {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.25em;
+    vertical-align: middle;
+}
+
+/* Button Icons */
+.action-btn .icon,
+.property-action-btn .icon {
+    width: 1.125em;
+    height: 1.125em;
+    margin-right: 0.5em;
+    vertical-align: middle;
+}
+
+/* Chat Message Icons */
+.message-bubble .icon {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.25em;
+    vertical-align: middle;
+}
+
+/* SVG Icon Usage */
+.icon-home use { fill: currentColor; }
+.icon-search use { fill: currentColor; }
+.icon-chat use { fill: currentColor; }
+.icon-phone use { fill: currentColor; }
+.icon-plus use { fill: currentColor; }
+.icon-list use { fill: currentColor; }
+.icon-market use { fill: currentColor; }
+.icon-support use { fill: currentColor; }
+
+.icon-bed use { fill: currentColor; }
+.icon-bath use { fill: currentColor; }
+.icon-area use { fill: currentColor; }
+.icon-location use { fill: currentColor; }
+.icon-verified use { fill: currentColor; }
+.icon-star use { fill: currentColor; }
+
+.icon-calendar use { fill: currentColor; }
+.icon-view use { fill: currentColor; }
+.icon-share use { fill: currentColor; }
+.icon-contact use { fill: currentColor; }
+
+.icon-parking use { fill: currentColor; }
+.icon-power use { fill: currentColor; }
+.icon-security use { fill: currentColor; }
+.icon-pool use { fill: currentColor; }
+.icon-gym use { fill: currentColor; }
+.icon-water use { fill: currentColor; }
+.icon-bq use { fill: currentColor; }
+
+.icon-back use { fill: currentColor; }
+.icon-menu use { fill: currentColor; }
+.icon-close use { fill: currentColor; }
+.icon-check use { fill: currentColor; }
+.icon-arrow-right use { fill: currentColor; }
+.icon-arrow-left use { fill: currentColor; }
+
+.icon-apartment use { fill: currentColor; }
+.icon-house use { fill: currentColor; }
+.icon-duplex use { fill: currentColor; }
+.icon-penthouse use { fill: currentColor; }
+.icon-studio use { fill: currentColor; }
+.icon-commercial use { fill: currentColor; }
+
+.icon-loading use { fill: currentColor; }
+.icon-robot use { fill: currentColor; }
+.icon-camera use { fill: currentColor; }
+.icon-gallery use { fill: currentColor; }
+
+/* Icon Colors */
+.icon-primary {
+    color: #00C853;
+}
+
+.icon-secondary {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.icon-accent {
+    color: #007AFF;
+}
+
+.icon-success {
+    color: #34C759;
+}
+
+.icon-warning {
+    color: #FF9500;
+}
+
+.icon-danger {
+    color: #FF3B30;
+}
+
+/* Icon Hover Effects */
+.icon-hover:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+/* Icon Animation */
+@keyframes icon-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.icon-animated {
+    animation: icon-pulse 2s ease-in-out infinite;
+}

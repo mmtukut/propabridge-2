@@ -268,24 +268,36 @@ function addPropertyCardToChat(property) {
   const formattedPrice = formatPrice(property.price);
   const specs = [];
 
-  if (property.area) specs.push(`📐 ${property.area}m²`);
-  if (property.bedrooms) specs.push(`🛏️ ${property.bedrooms} Bed`);
-  if (property.bathrooms) specs.push(`🚿 ${property.bathrooms} Bath`);
+  if (property.area) specs.push(`<svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-area"></use></svg>${property.area}m²`);
+  if (property.bedrooms) specs.push(`<svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-bed"></use></svg>${property.bedrooms} Bed`);
+  if (property.bathrooms) specs.push(`<svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-bath"></use></svg>${property.bathrooms} Bath`);
 
   cardDiv.innerHTML = `
     <div class="property-card-chat" onclick="viewPropertyDetail(${property.id})">
       <div class="property-image-chat">
-        ${property.verified ? '<div class="verified-badge-chat">✓ Verified</div>' : ''}
-        🏠 ${property.type || 'Property'}
+        ${property.verified ? '<div class="verified-badge-chat"><svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-verified"></use></svg> Verified</div>' : ''}
+        <svg class="icon icon-lg" viewBox="0 0 24 24"><use href="#icon-house"></use></svg> ${property.type || 'Property'}
       </div>
       <div class="property-details-chat">
-        <div class="property-price-chat">💰 ${formattedPrice}</div>
-        <div class="property-location-chat">📍 ${property.type} • ${property.location}</div>
+        <div class="property-price-chat">
+          <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24"><use href="#icon-market"></use></svg>
+          ${formattedPrice}
+        </div>
+        <div class="property-location-chat">
+          <svg class="icon icon-sm icon-secondary" viewBox="0 0 24 24"><use href="#icon-location"></use></svg>
+          ${property.type} • ${property.location}
+        </div>
         ${specs.length > 0 ? `<div class="property-specs-chat">${specs.join(' • ')}</div>` : ''}
-        ${property.features ? `<div class="property-features-chat">✨ ${property.features}</div>` : ''}
+        ${property.features ? `<div class="property-features-chat"><svg class="icon icon-sm icon-primary" viewBox="0 0 24 24"><use href="#icon-star"></use></svg> ${property.features}</div>` : ''}
         <div class="property-actions-chat">
-          <button class="property-action-btn" onclick="event.stopPropagation(); scheduleViewing(${property.id})">📅 Schedule</button>
-          <button class="property-action-btn" onclick="event.stopPropagation(); viewPropertyDetail(${property.id})">👁️ View</button>
+          <button class="property-action-btn" onclick="event.stopPropagation(); scheduleViewing(${property.id})">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-calendar"></use></svg>
+            Schedule
+          </button>
+          <button class="property-action-btn" onclick="event.stopPropagation(); viewPropertyDetail(${property.id})">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-view"></use></svg>
+            View
+          </button>
         </div>
       </div>
     </div>

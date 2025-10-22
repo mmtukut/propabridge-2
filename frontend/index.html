@@ -12,17 +12,34 @@
 <body>
     <!-- Navigation -->
     <div class="nav">
-        <button class="back-btn" onclick="goBack()" id="backBtn">Back</button>
+        <button class="back-btn" onclick="enhancedGoBack()" id="backBtn">Back</button>
         <div class="logo">Propabridge</div>
     </div>
     
     <!-- Secondary Menu -->
     <div class="secondary-nav">
         <button class="menu-btn" onclick="toggleMenu()">⋯</button>
-        <div class="menu-panel" id="menuPanel">
-            <div class="menu-item" onclick="showScreen('whatsapp')">WhatsApp Bot</div>
-            <div class="menu-item" onclick="showScreen('market')">Market Data</div>
-            <div class="menu-item" onclick="alert('Support: +234 805 526 9579')">Support</div>
+        <div class="menu-panel glass-intense" id="menuPanel">
+            <div class="menu-item" onclick="showScreen('whatsapp')">
+                <span class="menu-icon">💬</span>
+                <span>WhatsApp Bot</span>
+            </div>
+            <div class="menu-item" onclick="showScreen('market')">
+                <span class="menu-icon">📊</span>
+                <span>Market Data</span>
+            </div>
+            <div class="menu-item" onclick="showScreen('find-step1')">
+                <span class="menu-icon">🔍</span>
+                <span>Find Property</span>
+            </div>
+            <div class="menu-item" onclick="showScreen('list-step1')">
+                <span class="menu-icon">➕</span>
+                <span>List Property</span>
+            </div>
+            <div class="menu-item" onclick="alert('Support: +234 805 526 9579')">
+                <span class="menu-icon">🛠️</span>
+                <span>Support</span>
+            </div>
         </div>
     </div>
     
@@ -128,21 +145,37 @@
     <!-- Property Detail -->
     <div class="screen" id="property-detail">
         <div class="detail-container">
-            <div class="detail-image">360° Virtual Tour Available</div>
-            
-            <div class="property-details">
-                <div class="property-price">₦2,500,000/year</div>
-                <div class="property-location">Plot 234, Aminu Kano Crescent, Wuse 2</div>
-                <div class="property-specs">
-                    <span>180m²</span>
-                    <span>2 Parking</span>
-                    <span>24/7 Power</span>
-                    <span>Gated</span>
+            <div class="detail-image-container">
+                <div class="detail-image">
+                    <div class="image-placeholder-detail">
+                        <div class="image-icon-detail">🏠</div>
+                        <div class="image-text-detail">Property Image</div>
+                    </div>
+                </div>
+                <div class="property-gallery-nav">
+                    <button class="gallery-btn prev" onclick="previousImage()">‹</button>
+                    <button class="gallery-btn next" onclick="nextImage()">›</button>
                 </div>
             </div>
-            
-            <div class="verification-panel">
-                <h3 style="margin-bottom:16px; font-size: 16px;">✓ Fully Verified</h3>
+
+            <div class="property-details">
+                <div class="property-header-detail">
+                    <h2 class="property-title-detail">Luxury Apartment</h2>
+                    <div class="property-price-detail">₦2,500,000<span class="price-period-detail">/year</span></div>
+                </div>
+                <div class="property-location-detail">📍 Plot 234, Aminu Kano Crescent, Wuse 2, Abuja</div>
+                <div class="property-specs-detail">
+                    <span class="spec-item">📐 180m²</span>
+                    <span class="spec-item">🛏️ 3 Bedrooms</span>
+                    <span class="spec-item">🚿 2 Bathrooms</span>
+                    <span class="spec-item">🅿️ 2 Parking</span>
+                    <span class="spec-item">⚡ 24/7 Power</span>
+                    <span class="spec-item">🔐 Gated Community</span>
+                </div>
+            </div>
+
+            <div class="verification-panel glass">
+                <h3 class="verification-title">✓ Fully Verified Property</h3>
                 <div class="verification-item">
                     <span class="check-icon">✓</span>
                     <span>Title Documents Verified</span>
@@ -156,71 +189,417 @@
                     <span>Owner Identity Confirmed</span>
                 </div>
             </div>
-            
-            <div class="ai-summary">
-                <strong>Why AI Recommends This</strong><br>
-                • 15% below market average<br>
-                • Landlord responds within 2 hours<br>
-                • Walking distance to Wuse Market
+
+            <div class="ai-summary glass">
+                <h4 class="ai-summary-title">🎯 Why AI Recommends This</h4>
+                <ul class="ai-summary-list">
+                    <li>15% below market average</li>
+                    <li>Landlord responds within 2 hours</li>
+                    <li>Walking distance to Wuse Market</li>
+                    <li>High security neighborhood</li>
+                </ul>
             </div>
         </div>
-        
-        <div class="contact-actions">
-            <button class="btn-primary" onclick="contactLandlord()">Contact Landlord</button>
+
+        <div class="contact-actions glass">
+            <div class="action-buttons">
+                <button class="btn-secondary action-btn" onclick="scheduleViewing()">
+                    <span class="btn-icon">📅</span>
+                    <span>Schedule Viewing</span>
+                </button>
+                <button class="btn-primary action-btn" onclick="contactLandlord()">
+                    <span class="btn-icon">📞</span>
+                    <span>Contact Landlord</span>
+                </button>
+                <button class="btn-secondary action-btn" onclick="shareProperty()">
+                    <span class="btn-icon">📤</span>
+                    <span>Share Property</span>
+                </button>
+            </div>
         </div>
     </div>
     
-    <!-- List Property: Step 1 -->
+    <!-- List Property: Step 1 - Basic Info -->
     <div class="screen" id="list-step1">
-        <div class="input-screen">
-            <div class="step-header">
-                <h2 class="step-title">List Your Property</h2>
-                <p class="step-subtitle">Get verified and reach serious buyers</p>
-            </div>
-            <div class="input-container">
-                <div class="upload-zone" onclick="alert('Camera/Gallery access')">
-                    <div class="upload-icon">📸</div>
-                    <div>Take or Upload Photos</div>
+        <div class="listing-container">
+            <div class="listing-progress">
+                <div class="progress-step active">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Basic Info</div>
                 </div>
-                <input type="text" class="input-field" placeholder="Property Address" value="Plot 456, Gwarinpa, Abuja">
-                <input type="tel" class="input-field" placeholder="Your WhatsApp" value="+234 805 526 9579">
-                <button class="btn-primary" onclick="showScreen('list-step2')">Continue</button>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Photos</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Details</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Review</div>
+                </div>
+            </div>
+
+            <div class="listing-header">
+                <h2 class="listing-title">List Your Property</h2>
+                <p class="listing-subtitle">Get verified and reach serious buyers in minutes</p>
+            </div>
+
+            <div class="listing-form">
+                <div class="form-section">
+                    <h3 class="section-title">📍 Property Location</h3>
+                    <input type="text" class="input-field" placeholder="Full property address" id="propertyAddress" value="Plot 456, Gwarinpa, Abuja" required>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">📱 Contact Information</h3>
+                    <input type="tel" class="input-field" placeholder="Your WhatsApp number" id="contactPhone" value="+234 805 526 9579" required>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="showScreen('home')">Cancel</button>
+                    <button class="btn-primary" onclick="nextStep('list-step2')">Continue</button>
+                </div>
             </div>
         </div>
     </div>
-    
-    <!-- List Property: Step 2 -->
+
+    <!-- List Property: Step 2 - Photos -->
     <div class="screen" id="list-step2">
-        <div class="input-screen">
-            <div class="step-header">
-                <h2 class="step-title">Property Details</h2>
-                <p class="step-subtitle">AI will optimize your listing</p>
+        <div class="listing-container">
+            <div class="listing-progress">
+                <div class="progress-step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-title">Basic Info</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step active">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Photos</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Details</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Review</div>
+                </div>
             </div>
-            <div class="input-container">
-                <div class="options-grid">
-                    <div class="option-btn selected">2 Bed</div>
-                    <div class="option-btn">3 Bed</div>
-                    <div class="option-btn">4+ Bed</div>
+
+            <div class="listing-header">
+                <h2 class="listing-title">Add Property Photos</h2>
+                <p class="listing-subtitle">Upload high-quality photos to attract more buyers</p>
+            </div>
+
+            <div class="photo-upload-section">
+                <div class="upload-zone" id="photoUploadZone">
+                    <div class="upload-content">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">Click to upload photos</div>
+                        <div class="upload-subtext">or drag and drop</div>
+                        <input type="file" id="photoInput" multiple accept="image/*" style="display: none;">
+                    </div>
                 </div>
-                <input type="text" class="input-field" placeholder="Price (yearly)" value="₦3,500,000">
-                <div class="options-grid">
-                    <div class="option-btn selected">For Rent</div>
-                    <div class="option-btn">For Sale</div>
-                    <div class="option-btn">Short Let</div>
+
+                <div class="photo-preview" id="photoPreview">
+                    <!-- Uploaded photos will appear here -->
                 </div>
-                <textarea class="input-field text-area" placeholder="Additional features...">24/7 power, water, gated compound, gym, pool</textarea>
-                <button class="btn-primary" onclick="showScreen('list-success')">Submit for Verification</button>
+
+                <div class="upload-tips">
+                    <h4>📋 Photo Tips:</h4>
+                    <ul>
+                        <li>Upload at least 3 high-quality photos</li>
+                        <li>Include exterior, interior, and key features</li>
+                        <li>Use good lighting and steady camera</li>
+                        <li>Show the property from multiple angles</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="goBackFromListing()">Back</button>
+                <button class="btn-primary" onclick="nextStep('list-step3')" id="photoContinueBtn" disabled>Continue</button>
             </div>
         </div>
     </div>
-    
+
+    <!-- List Property: Step 3 - Details -->
+    <div class="screen" id="list-step3">
+        <div class="listing-container">
+            <div class="listing-progress">
+                <div class="progress-step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-title">Basic Info</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-title">Photos</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step active">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Details</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Review</div>
+                </div>
+            </div>
+
+            <div class="listing-header">
+                <h2 class="listing-title">Property Details</h2>
+                <p class="listing-subtitle">Help buyers understand your property better</p>
+            </div>
+
+            <div class="listing-form">
+                <div class="form-section">
+                    <h3 class="section-title">🏠 Property Type</h3>
+                    <div class="property-type-grid">
+                        <div class="type-option selected" data-type="apartment">
+                            <div class="type-icon">🏢</div>
+                            <div class="type-name">Apartment</div>
+                        </div>
+                        <div class="type-option" data-type="house">
+                            <div class="type-icon">🏠</div>
+                            <div class="type-name">House</div>
+                        </div>
+                        <div class="type-option" data-type="duplex">
+                            <div class="type-icon">🏘️</div>
+                            <div class="type-name">Duplex</div>
+                        </div>
+                        <div class="type-option" data-type="penthouse">
+                            <div class="type-icon">🏛️</div>
+                            <div class="type-name">Penthouse</div>
+                        </div>
+                        <div class="type-option" data-type="studio">
+                            <div class="type-icon">🏠</div>
+                            <div class="type-name">Studio</div>
+                        </div>
+                        <div class="type-option" data-type="other">
+                            <div class="type-icon">🏗️</div>
+                            <div class="type-name">Other</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">🛏️ Bedrooms</h3>
+                    <div class="bedroom-grid">
+                        <div class="bedroom-option" data-bedrooms="1">1 Bed</div>
+                        <div class="bedroom-option selected" data-bedrooms="2">2 Bed</div>
+                        <div class="bedroom-option" data-bedrooms="3">3 Bed</div>
+                        <div class="bedroom-option" data-bedrooms="4">4 Bed</div>
+                        <div class="bedroom-option" data-bedrooms="5">5+ Bed</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">💰 Listing Type & Price</h3>
+                    <div class="listing-type-grid">
+                        <div class="listing-option selected" data-listing-type="rent">
+                            <div class="listing-icon">🏠</div>
+                            <div class="listing-name">For Rent</div>
+                        </div>
+                        <div class="listing-option" data-listing-type="sale">
+                            <div class="listing-icon">💰</div>
+                            <div class="listing-name">For Sale</div>
+                        </div>
+                        <div class="listing-option" data-listing-type="shortlet">
+                            <div class="listing-icon">⏰</div>
+                            <div class="listing-name">Short Let</div>
+                        </div>
+                    </div>
+                    <input type="text" class="input-field price-input" placeholder="Enter price" id="propertyPrice" value="₦3,500,000" required>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">📐 Property Size</h3>
+                    <div class="size-inputs">
+                        <input type="number" class="input-field" placeholder="Area (sqm)" id="propertyArea" value="180" min="1">
+                        <input type="number" class="input-field" placeholder="Bathrooms" id="propertyBathrooms" value="2" min="1">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">✨ Features & Amenities</h3>
+                    <div class="amenities-grid">
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="24/7 Power" checked>
+                            <span class="amenity-label">24/7 Power</span>
+                        </label>
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="Security" checked>
+                            <span class="amenity-label">Security</span>
+                        </label>
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="Parking" checked>
+                            <span class="amenity-label">Parking</span>
+                        </label>
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="Gym">
+                            <span class="amenity-label">Gym</span>
+                        </label>
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="Pool" checked>
+                            <span class="amenity-label">Swimming Pool</span>
+                        </label>
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="Garden">
+                            <span class="amenity-label">Garden</span>
+                        </label>
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="Balcony">
+                            <span class="amenity-label">Balcony</span>
+                        </label>
+                        <label class="amenity-item">
+                            <input type="checkbox" class="amenity-checkbox" value="Furnished">
+                            <span class="amenity-label">Furnished</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">📝 Additional Description</h3>
+                    <textarea class="input-field text-area" placeholder="Describe your property, neighborhood, and any special features..." id="propertyDescription" rows="4">24/7 power, water, gated compound, gym, pool</textarea>
+                </div>
+
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="goBackFromListing()">Back</button>
+                    <button class="btn-primary" onclick="nextStep('list-step4')">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Property: Step 4 - Review & Submit -->
+    <div class="screen" id="list-step4">
+        <div class="listing-container">
+            <div class="listing-progress">
+                <div class="progress-step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-title">Basic Info</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-title">Photos</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-title">Details</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step active">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Review</div>
+                </div>
+            </div>
+
+            <div class="listing-header">
+                <h2 class="listing-title">Review Your Listing</h2>
+                <p class="listing-subtitle">Please review all details before submitting</p>
+            </div>
+
+            <div class="review-section">
+                <div class="review-card">
+                    <h3 class="review-title">📋 Summary</h3>
+                    <div class="review-item">
+                        <span class="review-label">Address:</span>
+                        <span class="review-value" id="reviewAddress">-</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Contact:</span>
+                        <span class="review-value" id="reviewContact">-</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Type:</span>
+                        <span class="review-value" id="reviewType">-</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Bedrooms:</span>
+                        <span class="review-value" id="reviewBedrooms">-</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Price:</span>
+                        <span class="review-value" id="reviewPrice">-</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Features:</span>
+                        <span class="review-value" id="reviewFeatures">-</span>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <h3 class="review-title">📸 Photos</h3>
+                    <div class="review-photos" id="reviewPhotos">
+                        <div class="no-photos">No photos uploaded yet</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="goBackFromListing()">Back</button>
+                <button class="btn-primary" onclick="submitPropertyListing()" id="submitBtn">
+                    <span class="btn-text">Submit for Verification</span>
+                    <span class="btn-loading" style="display: none;">⏳ Submitting...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- List Success -->
     <div class="screen" id="list-success">
         <div class="success-container">
-            <div class="success-icon">✓</div>
-            <h2 class="success-title">Listed Successfully</h2>
-            <p class="success-subtitle">Your property is now live. WhatsApp notifications when buyers show interest.</p>
-            <button class="btn-primary" onclick="showScreen('home')">Done</button>
+            <div class="success-animation">
+                <div class="success-icon">✓</div>
+                <div class="success-ring"></div>
+            </div>
+            <h2 class="success-title">🎉 Property Listed Successfully!</h2>
+            <p class="success-subtitle">Your property is now live and visible to thousands of potential buyers.</p>
+
+            <div class="success-details">
+                <div class="success-card">
+                    <h3>What happens next?</h3>
+                    <div class="success-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot">1</div>
+                            <div class="timeline-content">
+                                <h4>AI Review</h4>
+                                <p>Our AI will optimize your listing for better visibility</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">2</div>
+                            <div class="timeline-content">
+                                <h4>Verification</h4>
+                                <p>We'll verify your property details within 24 hours</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot">3</div>
+                            <div class="timeline-content">
+                                <h4>Live Listing</h4>
+                                <p>Your property goes live and starts receiving inquiries</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <button class="btn-primary" onclick="showScreen('home')">View My Dashboard</button>
+                <button class="btn-secondary" onclick="showScreen('whatsapp')">Chat with Buyers</button>
+            </div>
         </div>
     </div>
     
@@ -235,11 +614,11 @@
                 <div class="message bot">
                     <div class="message-bubble">
                         👋 Hi! I'm your Propabridge assistant.<br><br>
-                        I can help you:<br>
-                        • Find properties in Nigeria<br>
-                        • Schedule viewings<br>
-                        • List your property<br><br>
-                        What would you like to do?
+                        I can help you find the perfect property! Try asking:<br><br>
+                        • "I need a 3 bedroom flat in Wuse 2"<br>
+                        • "Show me houses under ₦2M in Abuja"<br>
+                        • "Find apartments in Lekki with parking"<br><br>
+                        What are you looking for?
                     </div>
                 </div>
             </div>
@@ -280,10 +659,352 @@
     <script src="api.js"></script>
     <script src="app.js"></script>
     <script src="chat.js"></script>
+    <script src="listing.js"></script>
+    
     <script>
+      // ===================================
+      // FALLBACK FUNCTIONS TO PREVENT ERRORS
+      // ===================================
+      
+      // Fallback for nextStep function
+      if (typeof nextStep === 'undefined') {
+        function nextStep(nextStepId) {
+          console.log('Using fallback nextStep function for:', nextStepId);
+          showScreen(nextStepId);
+        }
+        window.nextStep = nextStep;
+      }
+
+      // Fallback for goBackFromListing function
+      function goBackFromListing() {
+        console.log('goBackFromListing called');
+        // Get current screen and go back appropriately
+        const currentScreen = document.querySelector('.screen.active');
+        if (currentScreen) {
+          const screenId = currentScreen.id;
+          console.log('Current screen:', screenId);
+          
+          // Navigate back based on current step
+          switch (screenId) {
+            case 'list-step2':
+              showScreen('list-step1');
+              break;
+            case 'list-step3':
+              showScreen('list-step2');
+              break;
+            case 'list-step4':
+              showScreen('list-step3');
+              break;
+            default:
+              showScreen('home');
+          }
+        } else {
+          showScreen('home');
+        }
+      }
+      window.goBackFromListing = goBackFromListing;
+
+      // Enhanced goBack function that works with listing flow
+      function enhancedGoBack() {
+        const currentScreen = document.querySelector('.screen.active');
+        if (currentScreen) {
+          const screenId = currentScreen.id;
+          if (screenId.startsWith('list-')) {
+            goBackFromListing();
+          } else {
+            // Use original goBack function if it exists
+            if (typeof goBack === 'function') {
+              goBack();
+            } else {
+              showScreen('home');
+            }
+          }
+        } else {
+          showScreen('home');
+        }
+      }
+
+      // ===================================
+      // PHOTO UPLOAD FUNCTIONALITY
+      // ===================================
+      
+      function initializePhotoUploadFallback() {
+        const uploadZone = document.getElementById('photoUploadZone');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        
+        if (!uploadZone || !photoInput || !photoPreview) {
+          console.log('Photo upload elements not found');
+          return;
+        }
+
+        // Click to upload
+        uploadZone.addEventListener('click', () => {
+          console.log('Upload zone clicked');
+          photoInput.click();
+        });
+
+        // Handle file selection
+        photoInput.addEventListener('change', function(e) {
+          console.log('Files selected:', e.target.files.length);
+          handleFileSelect(e);
+        });
+
+        // Drag and drop functionality
+        uploadZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+          uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadZone.classList.remove('dragover');
+          const files = e.dataTransfer.files;
+          console.log('Files dropped:', files.length);
+          handleFileSelect({ target: { files: files } });
+        });
+      }
+
+      // Handle file selection
+      function handleFileSelect(e) {
+        const files = e.target.files;
+        const photoPreview = document.getElementById('photoPreview');
+        
+        if (!photoPreview) return;
+
+        Array.from(files).forEach(file => {
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const photoItem = createPhotoPreview(e.target.result, file.name);
+              photoPreview.appendChild(photoItem);
+              
+              // Update continue button
+              const continueBtn = document.getElementById('photoContinueBtn');
+              if (continueBtn) {
+                continueBtn.disabled = false;
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Create photo preview element
+      function createPhotoPreview(src, name) {
+        const photoItem = document.createElement('div');
+        photoItem.className = 'photo-item';
+        photoItem.innerHTML = `
+          <img src="${src}" alt="${name}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+          <button class="photo-remove" onclick="this.parentElement.remove(); updatePhotoCount();" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer;">×</button>
+        `;
+        photoItem.style.position = 'relative';
+        photoItem.style.display = 'inline-block';
+        photoItem.style.margin = '5px';
+        return photoItem;
+      }
+
+      // Update photo count and button state
+      function updatePhotoCount() {
+        const photoPreview = document.getElementById('photoPreview');
+        const continueBtn = document.getElementById('photoContinueBtn');
+        
+        if (photoPreview && continueBtn) {
+          const photoCount = photoPreview.children.length;
+          continueBtn.disabled = photoCount === 0;
+        }
+      }
+
+      // ===================================
+      // FORM FIELD INTERACTIONS
+      // ===================================
+      
+      function initializeFormFields() {
+        // Property Type selection
+        const propertyTypeOptions = document.querySelectorAll('.type-option');
+        propertyTypeOptions.forEach(option => {
+          option.addEventListener('click', function() {
+            propertyTypeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            const selectedType = this.getAttribute('data-type');
+            console.log('Property type selected:', selectedType);
+            updateReviewSection();
+          });
+        });
+
+        // Bedroom selection
+        const bedroomOptions = document.querySelectorAll('.bedroom-option');
+        bedroomOptions.forEach(option => {
+          option.addEventListener('click', function() {
+            bedroomOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            const selectedBedrooms = this.getAttribute('data-bedrooms');
+            console.log('Bedrooms selected:', selectedBedrooms);
+            updateReviewSection();
+          });
+        });
+
+        // Listing Type selection
+        const listingTypeOptions = document.querySelectorAll('.listing-option');
+        listingTypeOptions.forEach(option => {
+          option.addEventListener('click', function() {
+            listingTypeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            const selectedListingType = this.getAttribute('data-listing-type');
+            console.log('Listing type selected:', selectedListingType);
+            updateReviewSection();
+          });
+        });
+
+        // Price input validation
+        const priceInput = document.getElementById('propertyPrice');
+        if (priceInput) {
+          priceInput.addEventListener('input', function() {
+            console.log('Price entered:', this.value);
+            updateReviewSection();
+          });
+        }
+
+        // Description textarea
+        const descriptionInput = document.getElementById('propertyDescription');
+        if (descriptionInput) {
+          descriptionInput.addEventListener('input', function() {
+            console.log('Description entered:', this.value);
+            updateReviewSection();
+          });
+        }
+
+        // Amenities checkboxes
+        const amenityCheckboxes = document.querySelectorAll('.amenity-checkbox');
+        amenityCheckboxes.forEach(checkbox => {
+          checkbox.addEventListener('change', function() {
+            console.log('Amenity toggled:', this.value, this.checked);
+            updateReviewSection();
+          });
+        });
+
+        console.log('Form fields initialized successfully');
+      }
+
+      // ===================================
+      // REVIEW SECTION UPDATES
+      // ===================================
+      
+      function updateReviewSection() {
+        // Get selected property type
+        const selectedPropertyType = document.querySelector('.type-option.selected');
+        const propertyTypeValue = selectedPropertyType ? selectedPropertyType.querySelector('.type-name').textContent : '-';
+        
+        // Get selected bedrooms
+        const selectedBedrooms = document.querySelector('.bedroom-option.selected');
+        const bedroomsValue = selectedBedrooms ? selectedBedrooms.getAttribute('data-bedrooms') + ' Bed' : '-';
+        
+        // Get selected listing type
+        const selectedListingType = document.querySelector('.listing-option.selected');
+        const listingTypeValue = selectedListingType ? selectedListingType.querySelector('.listing-name').textContent : '-';
+        
+        // Get price
+        const priceInput = document.getElementById('propertyPrice');
+        const priceValue = priceInput ? priceInput.value || '-' : '-';
+        
+        // Get description
+        const descriptionInput = document.getElementById('propertyDescription');
+        const descriptionValue = descriptionInput ? descriptionInput.value || '-' : '-';
+        
+        // Get selected amenities
+        const selectedAmenities = Array.from(document.querySelectorAll('.amenity-checkbox:checked')).map(cb => cb.value);
+        const amenitiesValue = selectedAmenities.length > 0 ? selectedAmenities.join(', ') : '-';
+        
+        // Get address
+        const addressInput = document.getElementById('propertyAddress');
+        const addressValue = addressInput ? addressInput.value || '-' : '-';
+        
+        // Get contact
+        const contactInput = document.getElementById('contactPhone');
+        const contactValue = contactInput ? contactInput.value || '-' : '-';
+
+        // Update review elements
+        const reviewElements = {
+          'reviewType': propertyTypeValue,
+          'reviewBedrooms': bedroomsValue,
+          'reviewPrice': priceValue,
+          'reviewFeatures': amenitiesValue,
+          'reviewAddress': addressValue,
+          'reviewContact': contactValue
+        };
+
+        Object.entries(reviewElements).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.textContent = value;
+          }
+        });
+      }
+
+      // ===================================
+      // HOVER EFFECTS
+      // ===================================
+      
+      function addHoverEffects() {
+        const style = document.createElement('style');
+        style.textContent = `
+          .type-option, .bedroom-option, .listing-option {
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .type-option:hover, .bedroom-option:hover, .listing-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          }
+          .amenity-item {
+            cursor: pointer;
+          }
+          .amenity-item:hover {
+            background-color: rgba(0, 200, 83, 0.1);
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      // ===================================
+      // INITIALIZATION
+      // ===================================
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Initializing fallback functions...');
+        
+        // Initialize all functionality with delays to ensure DOM is ready
+        setTimeout(initializePhotoUploadFallback, 100);
+        setTimeout(initializeFormFields, 200);
+        setTimeout(addHoverEffects, 300);
+        setTimeout(updateReviewSection, 400);
+        
+        console.log('All fallback functions initialized');
+      });
+
+      // ===================================
+      // SUBMIT FUNCTION FALLBACK
+      // ===================================
+      
+      if (typeof submitPropertyListing === 'undefined') {
+        function submitPropertyListing() {
+          console.log('Using fallback submitPropertyListing function');
+          alert('Property listing submitted successfully! (Fallback function)');
+          showScreen('home');
+        }
+        window.submitPropertyListing = submitPropertyListing;
+      }
+    </script>
+    
+    <script>
+      // Service Worker Registration
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('./sw.js')
             .then(registration => {
               console.log('Service Worker registered:', registration);
             })

@@ -80,7 +80,9 @@ async function sendMessage() {
     }
 
     // Send to API
+    console.log('Sending message to API:', message);
     const response = await API.chat.sendMessage(message, ChatState.userPhone);
+    console.log('Received API response:', response);
 
     // Hide typing indicator
     showTypingIndicator(false);
@@ -89,9 +91,11 @@ async function sendMessage() {
     if (response) {
       setTimeout(() => {
         if (response.type === 'property_results' && response.properties) {
+          console.log('Handling property results:', response.properties.length, 'properties');
           // Handle property results
           handlePropertyResults(response);
         } else if (response.response) {
+          console.log('Handling text response:', response.response);
           // Handle simple text response
           addMessageToUI(response.response, 'bot');
           ChatState.messages.push({
@@ -100,6 +104,7 @@ async function sendMessage() {
             timestamp: new Date()
           });
         } else if (response.message) {
+          console.log('Handling message response:', response.message);
           // Handle other structured responses
           addMessageToUI(response.message, 'bot');
           ChatState.messages.push({
@@ -107,16 +112,27 @@ async function sendMessage() {
             sender: 'bot',
             timestamp: new Date()
           });
+        } else {
+          console.error('No valid response type found in:', response);
+          // Fallback for unexpected response format
+          const fallbackMsg = 'I received your message but had trouble processing it. Can you try rephrasing?';
+          addMessageToUI(fallbackMsg, 'bot');
         }
+      }, 500);
+    } else {
+      console.error('No response received from API');
+      setTimeout(() => {
+        const errorMsg = 'Sorry, I\'m having trouble connecting right now. Please try again.';
+        addMessageToUI(errorMsg, 'bot');
       }, 500);
     }
   } catch (error) {
     console.error('Error sending message:', error);
     showTypingIndicator(false);
 
-    // Show error message
+    // Show error message with more helpful guidance
     setTimeout(() => {
-      const errorMsg = 'Sorry, I\'m having trouble connecting. Please try again.';
+      const errorMsg = '🤖 Sorry, I\'m having trouble connecting right now.\n\nPlease check your internet connection and try again. If the problem persists, you can also:\n\n• Use the "Find Property" option in the menu\n• Contact support: +234 805 526 9579';
       addMessageToUI(errorMsg, 'bot');
     }, 500);
   }
@@ -198,7 +214,12 @@ function showTypingIndicator(show) {
  */
 function handlePropertyResults(response) {
   const chatWindow = document.getElementById('chatWindow');
-  if (!chatWindow) return;
+  if (!chatWindow) {
+    console.error('Chat window not found');
+    return;
+  }
+
+  console.log('Handling property results:', response);
 
   // Add summary message
   if (response.summary) {
@@ -207,11 +228,15 @@ function handlePropertyResults(response) {
 
   // Add each property as a card
   if (response.properties && response.properties.length > 0) {
+    console.log('Adding', response.properties.length, 'property cards');
     response.properties.slice(0, 3).forEach((property, index) => {
       setTimeout(() => {
+        console.log('Adding property card for:', property.type, property.location);
         addPropertyCardToChat(property);
       }, (index + 1) * 300); // Stagger the cards
     });
+  } else {
+    console.error('No properties found in response');
   }
 
   // Update chat state
@@ -230,7 +255,12 @@ function handlePropertyResults(response) {
  */
 function addPropertyCardToChat(property) {
   const chatWindow = document.getElementById('chatWindow');
-  if (!chatWindow) return;
+  if (!chatWindow) {
+    console.error('Chat window not found in addPropertyCardToChat');
+    return;
+  }
+
+  console.log('Creating property card for:', property.type, property.location);
 
   const cardDiv = document.createElement('div');
   cardDiv.className = 'message bot';
@@ -238,30 +268,33 @@ function addPropertyCardToChat(property) {
   const formattedPrice = formatPrice(property.price);
   const specs = [];
 
-  if (property.area) specs.push(`${property.area}m²`);
-  if (property.bedrooms) specs.push(`${property.bedrooms} Bed`);
-  if (property.bathrooms) specs.push(`${property.bathrooms} Bath`);
+  if (property.area) specs.push(`📐 ${property.area}m²`);
+  if (property.bedrooms) specs.push(`🛏️ ${property.bedrooms} Bed`);
+  if (property.bathrooms) specs.push(`🚿 ${property.bathrooms} Bath`);
 
   cardDiv.innerHTML = `
     <div class="property-card-chat" onclick="viewPropertyDetail(${property.id})">
       <div class="property-image-chat">
         ${property.verified ? '<div class="verified-badge-chat">✓ Verified</div>' : ''}
-        ${property.type || 'Property'}
+        🏠 ${property.type || 'Property'}
       </div>
       <div class="property-details-chat">
-        <div class="property-price-chat">${formattedPrice}</div>
-        <div class="property-location-chat">${property.type} • ${property.location}</div>
+        <div class="property-price-chat">💰 ${formattedPrice}</div>
+        <div class="property-location-chat">📍 ${property.type} • ${property.location}</div>
         ${specs.length > 0 ? `<div class="property-specs-chat">${specs.join(' • ')}</div>` : ''}
+        ${property.features ? `<div class="property-features-chat">✨ ${property.features}</div>` : ''}
         <div class="property-actions-chat">
-          <button class="property-action-btn" onclick="event.stopPropagation(); scheduleViewing(${property.id})">Schedule</button>
-          <button class="property-action-btn" onclick="event.stopPropagation(); viewPropertyDetail(${property.id})">View</button>
+          <button class="property-action-btn" onclick="event.stopPropagation(); scheduleViewing(${property.id})">📅 Schedule</button>
+          <button class="property-action-btn" onclick="event.stopPropagation(); viewPropertyDetail(${property.id})">👁️ View</button>
         </div>
       </div>
     </div>
   `;
 
+  console.log('Appending card to chat window');
   chatWindow.appendChild(cardDiv);
   chatWindow.scrollTop = chatWindow.scrollHeight;
+  console.log('Card added successfully');
 }
 
 /**
@@ -376,13 +409,49 @@ function viewPropertyDetail(propertyId) {
  */
 function scheduleViewing(propertyId) {
   // For now, just show an alert - this could be expanded to open a scheduling modal
-  alert(`Scheduling viewing for property #${propertyId}. This feature will be available soon!`);
+  alert(`📅 Scheduling viewing for property #${propertyId}\n\nThis feature will be available soon!`);
 
   // In a real implementation, this would:
   // 1. Open a scheduling modal
   // 2. Show available time slots
   // 3. Send scheduling request to backend
   // 4. Send confirmation via WhatsApp
+}
+
+/**
+ * Share property via WhatsApp or other platforms
+ */
+function shareProperty() {
+  const property = AppState.selectedProperty;
+  if (!property) return;
+
+  const shareText = `🏠 Check out this amazing property!\n\n${property.type}\n📍 ${property.location}\n💰 ₦${property.price.toLocaleString()}/year\n\nView details: ${window.location.origin}`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: `${property.type} - ${property.location}`,
+      text: shareText,
+      url: window.location.href
+    });
+  } else {
+    // Fallback to WhatsApp
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+}
+
+/**
+ * Navigate to previous image in gallery
+ */
+function previousImage() {
+  console.log('Previous image');
+}
+
+/**
+ * Navigate to next image in gallery
+ */
+function nextImage() {
+  console.log('Next image');
 }
 
 // ===================================

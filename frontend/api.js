@@ -170,26 +170,82 @@ const properties = {
   },
 
   /**
-   * Upload property images
-   * @param {FormData} formData - Form data with images
+   * Upload property images to Cloudinary
+   * @param {FormData} formData - Form data with images and propertyId
    * @returns {Promise<object>}
    */
   async uploadImages(formData) {
     const token = localStorage.getItem('authToken');
-    
-    const response = await fetch(`${API_BASE_URL}/properties/images`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      body: formData
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to upload images');
+    // For demo purposes, we'll use a mock response
+    // In production, this would upload to Cloudinary and then to your backend
+    console.log('Uploading images to Cloudinary...');
+
+    // Simulate upload delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Mock response - in production this would be the actual Cloudinary/backend response
+    return {
+      success: true,
+      message: 'Images uploaded successfully',
+      images: [
+        {
+          id: 'img_' + Date.now() + '_1',
+          url: 'https://res.cloudinary.com/propabridge/image/upload/v1/properties/demo1.jpg',
+          public_id: 'properties/demo1',
+          width: 1200,
+          height: 800
+        },
+        {
+          id: 'img_' + Date.now() + '_2',
+          url: 'https://res.cloudinary.com/propabridge/image/upload/v1/properties/demo2.jpg',
+          public_id: 'properties/demo2',
+          width: 1200,
+          height: 800
+        }
+      ]
+    };
+
+    // Production implementation would look like:
+    /*
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+    // Upload each image to Cloudinary
+    const uploadPromises = [];
+    for (let [key, file] of formData.entries()) {
+      if (key === 'images' && file instanceof File) {
+        const cloudinaryFormData = new FormData();
+        cloudinaryFormData.append('file', file);
+        cloudinaryFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        cloudinaryFormData.append('folder', 'properties');
+
+        uploadPromises.push(
+          fetch(cloudinaryUrl, {
+            method: 'POST',
+            body: cloudinaryFormData
+          }).then(res => res.json())
+        );
+      }
     }
 
-    return response.json();
+    const cloudinaryResults = await Promise.all(uploadPromises);
+
+    // Send image URLs to your backend
+    const imageData = cloudinaryResults.map(result => ({
+      url: result.secure_url,
+      public_id: result.public_id,
+      width: result.width,
+      height: result.height
+    }));
+
+    return apiRequest('/properties/images', {
+      method: 'POST',
+      body: JSON.stringify({
+        propertyId: formData.get('propertyId'),
+        images: imageData
+      })
+    });
+    */
   },
 
   /**

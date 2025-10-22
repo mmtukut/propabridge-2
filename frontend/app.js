@@ -66,6 +66,17 @@ function showScreen(screenId) {
  * Go back to previous screen
  */
 function goBack() {
+  // Check if we're on a listing screen and use listing navigation
+  const currentScreen = document.querySelector('.screen.active')?.id;
+  if (currentScreen && currentScreen.startsWith('list-step')) {
+    // Use listing navigation for listing screens
+    if (typeof window.goBackFromListing === 'function') {
+      window.goBackFromListing();
+      return;
+    }
+  }
+
+  // Default navigation for other screens
   if (AppState.screenHistory.length > 1) {
     AppState.screenHistory.pop();
     const previousScreen = AppState.screenHistory[AppState.screenHistory.length - 1];
@@ -190,58 +201,103 @@ function renderSearchResults() {
 }
 
 /**
- * Create property card element
+ * Create property card element - 10/10 Design
  * @param {object} property - Property data
  * @param {number} index - Card index
  * @returns {HTMLElement}
  */
 function createPropertyCard(property, index) {
   const card = document.createElement('div');
-  card.className = 'property-card';
+  card.className = 'property-card glass';
   card.onclick = () => showPropertyDetail(property.id);
-  
-  const verified = property.verified ? '<div class="verified-badge">✅ Verified</div>' : '';
-  const matchScore = property.matchScore ? `<div class="match-score">🎯 ${property.matchScore}% Match</div>` : '';
-  
+
+  // Format price properly
+  const formattedPrice = formatPriceDisplay(property.price);
+
+  // Format specs with emojis
+  const specs = [];
+  if (property.area) specs.push(`📐 ${property.area}m²`);
+  if (property.bedrooms) specs.push(`🛏️ ${property.bedrooms} Bed`);
+  if (property.bathrooms) specs.push(`🚿 ${property.bathrooms} Bath`);
+
   // Format amenities
-  const amenities = property.amenities ? property.amenities.slice(0, 3).join(' • ') : '';
-  
-  // Use real image if available, otherwise show placeholder
-  const imageHtml = property.primaryImage 
-    ? `<img src="${property.primaryImage.image_url}" alt="${property.type}" class="property-img">`
-    : `<div class="image-placeholder">
-         <div class="image-icon">🏠</div>
-         <div class="image-text">Property ${property.id}</div>
-       </div>`;
+  const amenities = property.amenities ? property.amenities.slice(0, 4).map(amenity => `✨ ${amenity}`).join(' ') : '';
+
+  // Match score with better styling
+  const matchScore = property.matchScore ?
+    `<div class="match-score glass-intense">
+       <span class="match-icon">🎯</span>
+       <span class="match-text">${property.matchScore}% Match</span>
+     </div>` : '';
+
+  // Property features
+  const features = property.features ?
+    `<div class="property-features">${property.features}</div>` : '';
+
+  // Image with fallback
+  const imageHtml = property.primaryImage && property.primaryImage.image_url ?
+    `<img src="${property.primaryImage.image_url}" alt="${property.type}" class="property-img" loading="lazy">` :
+    `<div class="image-placeholder glass">
+       <div class="image-icon">🏠</div>
+       <div class="image-text">${property.type || 'Property'}</div>
+     </div>`;
 
   card.innerHTML = `
-    <div class="property-image">
-      ${verified}
-      ${imageHtml}
-    </div>
-    <div class="property-details">
-      <div class="property-price">₦${parseFloat(property.price).toLocaleString()}/year</div>
-      <div class="property-location">${property.type} • ${property.location}</div>
-      <div class="property-specs">
-        <span>📐 ${property.area || 'N/A'}m²</span>
-        <span>🛏️ ${property.bedrooms} Bed</span>
-        <span>🚿 ${property.bathrooms || property.bedrooms} Bath</span>
+    <div class="property-image-container">
+      <div class="property-image">
+        ${imageHtml}
+        ${property.verified ? '<div class="verified-badge glass-intense">✓ Verified</div>' : ''}
       </div>
-      ${amenities ? `<div class="property-amenities">✨ ${amenities}</div>` : ''}
-      ${matchScore}
-      <div class="property-features">${property.features || 'No additional features listed'}</div>
     </div>
-    <div class="property-actions">
-      <button class="btn-secondary" onclick="event.stopPropagation(); contactLandlord(${property.id})">
-        📞 Contact Landlord
-      </button>
-      <button class="btn-primary" onclick="event.stopPropagation(); showPropertyDetail(${property.id})">
-        👁️ View Details
-      </button>
+    <div class="property-content">
+      <div class="property-header">
+        <h3 class="property-title">${property.type}</h3>
+        <div class="property-price">${formattedPrice}</div>
+      </div>
+
+      <div class="property-location">📍 ${property.location}</div>
+
+      <div class="property-specs">
+        ${specs.join(' • ')}
+      </div>
+
+      ${amenities ? `<div class="property-amenities">${amenities}</div>` : ''}
+
+      ${matchScore}
+
+      ${features ? `<div class="property-features-section">${features}</div>` : ''}
+
+      <div class="property-actions">
+        <button class="btn-secondary property-action-btn" onclick="event.stopPropagation(); contactLandlord(${property.id})">
+          <span class="btn-icon">📞</span>
+          <span>Contact Landlord</span>
+        </button>
+        <button class="btn-primary property-action-btn" onclick="event.stopPropagation(); showPropertyDetail(${property.id})">
+          <span class="btn-icon">👁️</span>
+          <span>View Details</span>
+        </button>
+      </div>
     </div>
   `;
-  
+
   return card;
+}
+
+/**
+ * Format price for display in property cards
+ * @param {string|number} price - Raw price
+ * @returns {string} - Formatted price
+ */
+function formatPriceDisplay(price) {
+  const numPrice = parseFloat(price);
+  if (isNaN(numPrice)) return 'Price on request';
+
+  if (numPrice >= 1000000) {
+    return `₦${(numPrice / 1000000).toFixed(1)}M<span class="price-period">/year</span>`;
+  } else if (numPrice >= 1000) {
+    return `₦${(numPrice / 1000).toFixed(0)}K<span class="price-period">/year</span>`;
+  }
+  return `₦${numPrice.toLocaleString()}<span class="price-period">/year</span>`;
 }
 
 /**
@@ -317,31 +373,7 @@ function contactLandlord(propertyId) {
 // LIST PROPERTY FLOW
 // ===================================
 
-/**
- * Handle property listing submission
- */
-async function submitPropertyListing() {
-  try {
-    showLoading(true);
-    
-    // Collect form data
-    const propertyData = {
-      // Add form field values here
-    };
-    
-    const result = await API.properties.create(propertyData);
-    
-    if (result.success) {
-      showScreen('list-success');
-    }
-    
-    showLoading(false);
-  } catch (error) {
-    console.error('Error listing property:', error);
-    showError('Failed to list property. Please try again.');
-    showLoading(false);
-  }
-}
+// Property listing functionality moved to listing.js for complete implementation
 
 // ===================================
 // OPTION BUTTONS (Bedrooms, Property Type, etc.)
@@ -417,7 +449,7 @@ function getSavedPhoneNumber() {
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Propabridge initialized');
-  
+
   // Restore saved phone number
   const savedPhone = getSavedPhoneNumber();
   if (savedPhone) {
@@ -427,14 +459,27 @@ document.addEventListener('DOMContentLoaded', function() {
       phoneInput.value = savedPhone;
     }
   }
-  
+
   // Show home screen
   showScreen('home');
-  
+
   // Check authentication status
   if (API.auth.isAuthenticated()) {
     const user = API.auth.getCurrentUser();
     console.log('User authenticated:', user?.phone);
+  }
+
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch(error => {
+          console.log('Service Worker registration failed:', error);
+        });
+    });
   }
 });
 
@@ -449,5 +494,4 @@ window.closeMenu = closeMenu;
 window.findProperties = findProperties;
 window.showPropertyDetail = showPropertyDetail;
 window.contactLandlord = contactLandlord;
-window.submitPropertyListing = submitPropertyListing;
 

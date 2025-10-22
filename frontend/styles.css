@@ -2529,6 +2529,42 @@ body {
     background: rgba(0, 196, 83, 0.2);
 }
 
+/* Chat Property Cards */
+.property-img-chat {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.image-text-chat {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.match-score-chat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 196, 83, 0.1);
+    border: 1px solid rgba(0, 196, 83, 0.3);
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #00C853;
+    margin-bottom: 8px;
+}
+
 /* Main Property Cards - 10/10 Design */
 .property-card {
     background: rgba(255, 255, 255, 0.05);
@@ -2793,4 +2829,397 @@ body {
 @media (max-width: 480px) {
     .brand { font-size: 36px; }
     .tagline { font-size: 24px; }
+}
+
+/* ===================================
+   SECURITY: ADMIN ACCESS CONTROL
+   =================================== */
+
+.admin-only {
+  display: none !important;
+}
+
+.admin-only.show {
+  display: flex !important;
+}
+
+/* Hide admin elements from regular users */
+body:not(.admin-user) .admin-only {
+  display: none !important;
+}
+
+/* ===================================
+   ADMIN DASHBOARD STYLES
+   =================================== */
+
+.admin-container {
+    padding: 90px 20px 40px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.stat-card.pending {
+    border-color: #FF9500;
+    background: rgba(255, 149, 0, 0.1);
+}
+
+.stat-card.approved {
+    border-color: #00C853;
+    background: rgba(0, 200, 83, 0.1);
+}
+
+.stat-card.rejected {
+    border-color: #FF3B30;
+    background: rgba(255, 59, 48, 0.1);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-section {
+    margin-bottom: 32px;
+}
+
+.admin-section .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pending-list {
+    display: grid;
+    gap: 16px;
+}
+
+.pending-property {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.pending-property:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.pending-property-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 16px;
+}
+
+.pending-property-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+
+.pending-property-price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #00C853;
+}
+
+.pending-property-details {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.pending-property-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 16px;
+}
+
+.pending-property-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-approve {
+    background: #00C853;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-approve:hover {
+    background: #00E676;
+    transform: scale(1.05);
+}
+
+.btn-reject {
+    background: rgba(255, 59, 48, 0.1);
+    color: #FF3B30;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-reject:hover {
+    background: rgba(255, 59, 48, 0.2);
+    transform: scale(1.05);
+}
+
+.quick-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.quick-actions .btn-secondary,
+.quick-actions .btn-primary {
+    height: 48px;
+    font-size: 15px;
+}
+
+/* Admin responsive */
+@media (max-width: 768px) {
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pending-property-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .pending-property-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* Admin Notifications */
+.success-notification,
+.error-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 200, 83, 0.9);
+    color: #000;
+    padding: 16px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    animation: slideInRight 0.3s ease;
+    max-width: 300px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.error-notification {
+    background: rgba(255, 59, 48, 0.9);
+    color: #fff;
+}
+
+.info-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 122, 255, 0.9);
+    color: #fff;
+    padding: 16px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    animation: slideInDown 0.3s ease;
+    max-width: 350px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.info-notification div {
+    flex: 1;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ===================================
+   AUTHENTICATION STYLES
+   =================================== */
+
+.auth-container {
+    padding: 90px 20px 40px;
+    max-width: 400px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-form {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 32px;
+    backdrop-filter: blur(20px);
+}
+
+.auth-step {
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-info {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 8px 0 0 0;
+    text-align: center;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    color: #00C853;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-family: inherit;
+}
+
+.link-btn:hover {
+    color: #00E676;
+}
+
+/* OTP Input Styling */
+#otpCode {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 8px;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+}
+
+#otpCode::placeholder {
+    letter-spacing: normal;
+    font-size: 17px;
+    font-weight: 400;
+    font-family: inherit;
 }

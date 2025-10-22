@@ -272,11 +272,49 @@ function addPropertyCardToChat(property) {
   if (property.bedrooms) specs.push(`<svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-bed"></use></svg>${property.bedrooms} Bed`);
   if (property.bathrooms) specs.push(`<svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-bath"></use></svg>${property.bathrooms} Bath`);
 
+  // Handle image display - fix parsing for different image formats
+  let imageHtml = '';
+  let imageUrl = null;
+
+  // Check different possible image formats from backend
+  if (property.primaryImage) {
+    if (typeof property.primaryImage === 'string') {
+      imageUrl = property.primaryImage;
+    } else if (property.primaryImage.image_url) {
+      imageUrl = property.primaryImage.image_url;
+    } else if (property.primaryImage.url) {
+      imageUrl = property.primaryImage.url;
+    }
+  }
+
+  // Fallback to images array if primaryImage not available
+  if (!imageUrl && property.images && property.images.length > 0) {
+    const firstImage = property.images[0];
+    if (typeof firstImage === 'string') {
+      imageUrl = firstImage;
+    } else if (firstImage.image_url) {
+      imageUrl = firstImage.image_url;
+    } else if (firstImage.url) {
+      imageUrl = firstImage.url;
+    }
+  }
+
+  if (imageUrl) {
+    imageHtml = `<img src="${imageUrl}" alt="${property.type}" class="property-img-chat" loading="lazy">`;
+  } else {
+    imageHtml = `
+      <svg class="icon icon-xl icon-secondary" viewBox="0 0 24 24">
+        <use href="#icon-house"></use>
+      </svg>
+      <div class="image-text-chat">${property.type || 'Property'}</div>
+    `;
+  }
+
   cardDiv.innerHTML = `
     <div class="property-card-chat" onclick="viewPropertyDetail(${property.id})">
       <div class="property-image-chat">
         ${property.verified ? '<div class="verified-badge-chat"><svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-verified"></use></svg> Verified</div>' : ''}
-        <svg class="icon icon-lg" viewBox="0 0 24 24"><use href="#icon-house"></use></svg> ${property.type || 'Property'}
+        ${imageHtml}
       </div>
       <div class="property-details-chat">
         <div class="property-price-chat">
@@ -289,6 +327,7 @@ function addPropertyCardToChat(property) {
         </div>
         ${specs.length > 0 ? `<div class="property-specs-chat">${specs.join(' • ')}</div>` : ''}
         ${property.features ? `<div class="property-features-chat"><svg class="icon icon-sm icon-primary" viewBox="0 0 24 24"><use href="#icon-star"></use></svg> ${property.features}</div>` : ''}
+        ${property.matchScore ? `<div class="match-score-chat"><svg class="icon icon-sm icon-primary" viewBox="0 0 24 24"><use href="#icon-star"></use></svg> ${property.matchScore}% Match</div>` : ''}
         <div class="property-actions-chat">
           <button class="property-action-btn" onclick="event.stopPropagation(); scheduleViewing(${property.id})">
             <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-calendar"></use></svg>

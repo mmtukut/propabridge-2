@@ -106,12 +106,23 @@ async function seedDatabase() {
     // Create sample users (landlords)
     console.log('👥 Creating sample users...');
     const userIds = {};
+
+    // Create admin user first
+    const adminResult = await client.query(
+      `INSERT INTO users (phone, name, role, verified)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id`,
+      ['+2348055269579', 'Propabridge Admin', 'admin', true]
+    );
+    userIds['admin'] = adminResult.rows[0].id;
+    console.log('  ✅ Admin user created');
+
     for (let i = 1; i <= 50; i++) {
       const phone = `+23480${String(i).padStart(8, '0')}`;
       const role = i <= 5 ? 'landlord' : 'user';
       const result = await client.query(
-        `INSERT INTO users (phone, name, role, verified) 
-         VALUES ($1, $2, $3, $4) 
+        `INSERT INTO users (phone, name, role, verified)
+         VALUES ($1, $2, $3, $4)
          RETURNING id`,
         [phone, `User ${i}`, role, true]
       );

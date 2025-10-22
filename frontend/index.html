@@ -45,6 +45,13 @@
                 </svg>
                 <span>List Property</span>
             </div>
+            <!-- Admin Panel - Hidden from regular users for security -->
+            <div class="menu-item admin-only" onclick="showAdminPanel()" style="display: none;">
+                <svg class="menu-icon icon" viewBox="0 0 24 24">
+                    <use href="#icon-support"></use>
+                </svg>
+                <span>Property Management</span>
+            </div>
             <div class="menu-item" onclick="alert('Support: +234 805 526 9579')">
                 <svg class="menu-icon icon" viewBox="0 0 24 24">
                     <use href="#icon-support"></use>
@@ -54,8 +61,72 @@
         </div>
     </div>
     
+    <!-- Authentication Screen -->
+    <div class="screen" id="auth">
+        <div class="auth-container">
+            <div class="step-header">
+                <h2 class="step-title">Welcome to Propabridge</h2>
+                <p class="step-subtitle">Get personalized property matches and secure access</p>
+            </div>
+
+            <div class="auth-form">
+                <div class="auth-step" id="phoneStep">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                                <use href="#icon-phone"></use>
+                            </svg>
+                            <span>Enter Your Phone Number</span>
+                        </h3>
+                        <input type="tel" class="input-field" placeholder="0805 641 9040 or +234 805 641 9040" id="authPhone" required>
+                        <p class="auth-info">We'll send you a verification code via WhatsApp. Supports all Nigerian formats.</p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn-secondary" onclick="skipAuthentication()" style="margin-bottom: 12px;">
+                            Browse Properties First
+                        </button>
+                        <button class="btn-primary" onclick="sendOTP()" id="sendOTPBtn">
+                            <svg class="btn-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-share"></use>
+                            </svg>
+                            <span>Send Verification Code</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="auth-step" id="otpStep" style="display: none;">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                                <use href="#icon-verified"></use>
+                            </svg>
+                            <span>Enter Verification Code</span>
+                        </h3>
+                        <input type="text" class="input-field" placeholder="000000" id="otpCode" maxlength="6" required>
+                        <p class="auth-info">Enter the 6-digit code sent to your phone</p>
+                        <p class="auth-info">
+                            Didn't receive it?
+                            <button class="link-btn" onclick="resendOTP()">Resend</button>
+                        </p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn-secondary" onclick="showPhoneStep()">Back</button>
+                        <button class="btn-primary" onclick="verifyOTP()" id="verifyOTPBtn">
+                            <svg class="btn-icon icon" viewBox="0 0 24 24">
+                                <use href="#icon-verified"></use>
+                            </svg>
+                            <span>Verify & Continue</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Home Screen -->
-    <div class="screen active" id="home">
+    <div class="screen" id="home">
         <div class="home-container">
             <h1 class="brand logo-main">Propabridge</h1>
             <h1 class="tagline">Stop Searching. <br> Start Living.</h1>
@@ -871,11 +942,163 @@
             </div>
         </div>
     </div>
+
+    <!-- Admin Login -->
+    <div class="screen" id="admin-login">
+        <div class="auth-container">
+            <div class="step-header">
+                <h2 class="step-title">Property Management</h2>
+                <p class="step-subtitle">Authorized personnel access only</p>
+            </div>
+
+            <div class="auth-form">
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                            <use href="#icon-support"></use>
+                        </svg>
+                        <span>Administrator Access</span>
+                    </h3>
+                    <input type="tel" class="input-field" placeholder="Admin phone number (+234...)" id="adminPhone" required>
+                    <input type="password" class="input-field" placeholder="Admin password" id="adminPassword" required>
+                    <p class="auth-info">Enter admin credentials to manage property listings and approvals.</p>
+                    <p class="auth-info" style="font-size: 12px; opacity: 0.8;">Demo: +2348055269579 / admin123</p>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="showScreen('home')">Cancel</button>
+                    <button class="btn-primary" onclick="adminLogin()" id="adminLoginBtn">
+                        <svg class="btn-icon icon" viewBox="0 0 24 24">
+                            <use href="#icon-verified"></use>
+                        </svg>
+                        <span>Access Admin Panel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="screen" id="admin">
+        <div class="admin-container">
+            <div class="step-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <h2 class="step-title">
+                            <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                                <use href="#icon-support"></use>
+                            </svg>
+                            <span>Property Management</span>
+                        </h2>
+                        <p class="step-subtitle">Review and approve property listings</p>
+                    </div>
+                    <button class="btn-secondary" onclick="adminLogout()" style="height: 40px; padding: 0 16px;">
+                        <svg class="btn-icon icon" viewBox="0 0 24 24">
+                            <use href="#icon-close"></use>
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Stats -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24">
+                            <use href="#icon-house"></use>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalProperties">0</div>
+                        <div class="stat-label">Total Properties</div>
+                    </div>
+                </div>
+
+                <div class="stat-card pending">
+                    <div class="stat-icon">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24">
+                            <use href="#icon-loading"></use>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="pendingProperties">0</div>
+                        <div class="stat-label">Pending Approval</div>
+                    </div>
+                </div>
+
+                <div class="stat-card approved">
+                    <div class="stat-icon">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24">
+                            <use href="#icon-verified"></use>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="approvedProperties">0</div>
+                        <div class="stat-label">Approved</div>
+                    </div>
+                </div>
+
+                <div class="stat-card rejected">
+                    <div class="stat-icon">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24">
+                            <use href="#icon-close"></use>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="rejectedProperties">0</div>
+                        <div class="stat-label">Rejected</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Properties -->
+            <div class="admin-section">
+                <h3 class="section-title">
+                    <svg class="icon icon-sm icon-warning" viewBox="0 0 24 24">
+                        <use href="#icon-loading"></use>
+                    </svg>
+                    <span>Pending Properties</span>
+                </h3>
+
+                <div class="pending-list" id="pendingList">
+                    <!-- Pending properties will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="admin-section">
+                <h3 class="section-title">
+                    <svg class="icon icon-sm icon-primary" viewBox="0 0 24 24">
+                        <use href="#icon-star"></use>
+                    </svg>
+                    <span>Quick Actions</span>
+                </h3>
+
+                <div class="quick-actions">
+                    <button class="btn-secondary" onclick="refreshPendingProperties()">
+                        <svg class="btn-icon icon" viewBox="0 0 24 24">
+                            <use href="#icon-loading"></use>
+                        </svg>
+                        Refresh
+                    </button>
+                    <button class="btn-primary" onclick="bulkApproveProperties()">
+                        <svg class="btn-icon icon" viewBox="0 0 24 24">
+                            <use href="#icon-verified"></use>
+                        </svg>
+                        Bulk Approve
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="api.js"></script>
+    <script src="auth.js"></script>
     <script src="app.js"></script>
     <script src="chat.js"></script>
     <script src="listing.js"></script>
+    <script src="admin.js"></script>
     
     <script>
       // ===================================
@@ -889,6 +1112,81 @@
           showScreen(nextStepId);
         }
         window.nextStep = nextStep;
+      }
+
+      // Fallback for showAdminPanel function
+      if (typeof showAdminPanel === 'undefined') {
+        function showAdminPanel() {
+          console.log('Using fallback showAdminPanel function');
+          showScreen('admin-login');
+        }
+        window.showAdminPanel = showAdminPanel;
+        window.showAdminDashboard = showAdminPanel; // Also support old name
+      }
+
+      // Debug: Check if showAdminPanel is available
+      console.log('showAdminPanel available:', typeof showAdminPanel);
+      console.log('showAdminDashboard available:', typeof showAdminDashboard);
+
+      // Security: Show admin panel only to authenticated admin users
+      function checkAdminAccess() {
+        const adminPanel = document.querySelector('.admin-only');
+        const body = document.body;
+        
+        if (adminPanel) {
+          // Check if user is authenticated admin
+          const isAdmin = API && API.admin && API.admin.isAdminLoggedIn();
+          if (isAdmin) {
+            adminPanel.classList.add('show');
+            body.classList.add('admin-user');
+            console.log('Admin panel shown to authenticated admin user');
+          } else {
+            adminPanel.classList.remove('show');
+            body.classList.remove('admin-user');
+            console.log('Admin panel hidden from regular user');
+          }
+        }
+      }
+
+      // Check admin access on page load and periodically
+      setTimeout(checkAdminAccess, 1000);
+      setInterval(checkAdminAccess, 5000); // Check every 5 seconds
+
+      // Hidden admin access method - Secret key combination
+      let adminKeySequence = [];
+      const adminSecretKey = ['KeyA', 'KeyD', 'KeyM', 'KeyI', 'KeyN']; // "ADMIN"
+      
+      document.addEventListener('keydown', function(e) {
+        adminKeySequence.push(e.code);
+        
+        // Keep only last 5 keys
+        if (adminKeySequence.length > 5) {
+          adminKeySequence.shift();
+        }
+        
+        // Check if sequence matches admin secret
+        if (adminKeySequence.length === 5 && 
+            adminKeySequence.every((key, index) => key === adminSecretKey[index])) {
+          console.log('Admin secret key detected!');
+          showAdminPanel();
+          adminKeySequence = []; // Reset sequence
+        }
+      });
+
+      // Alternative: URL parameter access (for development/testing)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('admin') === 'true') {
+        console.log('Admin access via URL parameter');
+        showAdminPanel();
+      }
+
+      // Fallback for adminLogin function
+      if (typeof adminLogin === 'undefined') {
+        function adminLogin() {
+          console.log('Using fallback adminLogin function');
+          alert('Admin login functionality is loading. Please try again in a moment.');
+        }
+        window.adminLogin = adminLogin;
       }
 
       // Fallback for goBackFromListing function

@@ -551,15 +551,35 @@ function createPropertyCard(property, index) {
   const features = property.features ?
     `<div class="property-features">${property.features}</div>` : '';
 
-  // Image with fallback
-  const imageHtml = property.primaryImage && property.primaryImage.image_url ?
-    `<img src="${property.primaryImage.image_url}" alt="${property.type}" class="property-img" loading="lazy">` :
-    `<div class="image-placeholder glass">
+  // Handle image display - fix the primaryImage object parsing
+  let imageHtml = '';
+  if (property.primaryImage) {
+    // Check if primaryImage is an object with image_url property (from backend)
+    if (typeof property.primaryImage === 'object' && property.primaryImage.image_url) {
+      imageHtml = `<img src="${property.primaryImage.image_url}" alt="${property.type}" class="property-img" loading="lazy">`;
+    }
+    // Check if primaryImage is already a URL string (fallback)
+    else if (typeof property.primaryImage === 'string') {
+      imageHtml = `<img src="${property.primaryImage}" alt="${property.type}" class="property-img" loading="lazy">`;
+    }
+    // Check if there's an images array with URLs
+    else if (property.images && property.images.length > 0) {
+      const firstImage = property.images.find(img => img.image_url) || property.images[0];
+      if (firstImage && firstImage.image_url) {
+        imageHtml = `<img src="${firstImage.image_url}" alt="${property.type}" class="property-img" loading="lazy">`;
+      }
+    }
+  }
+
+  // Fallback placeholder
+  if (!imageHtml) {
+    imageHtml = `<div class="image-placeholder glass">
        <svg class="image-icon icon-lg icon-secondary" viewBox="0 0 24 24">
          <use href="#icon-house"></use>
        </svg>
        <div class="image-text">${property.type || 'Property'}</div>
      </div>`;
+  }
 
   card.innerHTML = `
     <div class="property-image-container">
@@ -718,13 +738,32 @@ function renderPropertyDetail() {
     specsEl.innerHTML = specs.join('');
   }
 
-  // Update property image
+  // Update property image - handle primaryImage object properly
   const imageContainer = detailScreen.querySelector('.detail-image');
   if (imageContainer) {
-    if (property.primaryImage && property.primaryImage.image_url) {
+    let imageUrl = null;
+
+    // Extract image URL from primaryImage object
+    if (property.primaryImage) {
+      if (typeof property.primaryImage === 'object' && property.primaryImage.image_url) {
+        imageUrl = property.primaryImage.image_url;
+      } else if (typeof property.primaryImage === 'string') {
+        imageUrl = property.primaryImage;
+      }
+    }
+
+    // Check images array as fallback
+    if (!imageUrl && property.images && property.images.length > 0) {
+      const firstImage = property.images.find(img => img.image_url) || property.images[0];
+      if (firstImage && firstImage.image_url) {
+        imageUrl = firstImage.image_url;
+      }
+    }
+
+    if (imageUrl) {
       // Use actual property image
       imageContainer.innerHTML = `
-        <img src="${property.primaryImage.image_url}" alt="${property.type}" class="property-img" loading="lazy">
+        <img src="${imageUrl}" alt="${property.type}" class="property-img" loading="lazy">
         ${property.verified ? `
           <div class="verified-badge glass-intense">
             <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#icon-verified"></use></svg>
@@ -879,24 +918,8 @@ function getSavedPhoneNumber() {
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Propabridge initialized');
 
-  // Restore saved phone number
-  const savedPhone = getSavedPhoneNumber();
-  if (savedPhone) {
-    AppState.userPhone = savedPhone;
-    const phoneInput = document.getElementById('phoneInput');
-    if (phoneInput) {
-      phoneInput.value = savedPhone;
-    }
-  }
-
-  // Show home screen
-  showScreen('home');
-
-  // Check authentication status
-  if (API.auth.isAuthenticated()) {
-    const user = API.auth.getCurrentUser();
-    console.log('User authenticated:', user?.phone);
-  }
+  // Initialize authentication first
+  initializeAuth();
 
   // Register service worker
   if ('serviceWorker' in navigator) {

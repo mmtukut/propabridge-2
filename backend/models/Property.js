@@ -68,15 +68,15 @@ class Property {
     if (result.rows.length === 0) return null;
     
     const property = result.rows[0];
-    
-    // Fetch images for this property
+
+    // Fetch all images for this property
     const imagesResult = await query(
       'SELECT * FROM property_images WHERE property_id = $1 ORDER BY is_primary DESC, uploaded_at ASC',
       [id]
     );
-    
+
     property.images = imagesResult.rows;
-    property.primaryImage = imagesResult.rows.find(img => img.is_primary) || imagesResult.rows[0];
+    property.primaryImage = imagesResult.rows.find(img => img.is_primary) || imagesResult.rows[0] || null;
     
     return property;
   }
@@ -195,6 +195,13 @@ class Property {
           [property.id]
         );
         property.primaryImage = imageResult.rows[0] || null;
+
+        // Also fetch all images for the property
+        const allImagesResult = await query(
+          'SELECT * FROM property_images WHERE property_id = $1 ORDER BY is_primary DESC, uploaded_at ASC',
+          [property.id]
+        );
+        property.images = allImagesResult.rows;
       }
       
       return properties;

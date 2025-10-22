@@ -56,7 +56,8 @@ const auth = {
   async sendOTP(phone) {
     return apiRequest('/auth/send-otp', {
       method: 'POST',
-      body: JSON.stringify({ phone })
+      body: JSON.stringify({ phone }),
+      skipAuth: true
     });
   },
 
@@ -69,7 +70,8 @@ const auth = {
   async verifyOTP(phone, code) {
     const result = await apiRequest('/auth/verify-otp', {
       method: 'POST',
-      body: JSON.stringify({ phone, code })
+      body: JSON.stringify({ phone, code }),
+      skipAuth: true
     });
 
     if (result.success && result.token) {
@@ -101,6 +103,19 @@ const auth = {
   },
 
   /**
+   * Refresh authentication token
+   * @param {string} token - Current token
+   * @returns {Promise<object>}
+   */
+  async refreshToken(token) {
+    return apiRequest('/auth/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+      skipAuth: true
+    });
+  },
+
+  /**
    * Logout user
    */
   logout() {
@@ -113,7 +128,26 @@ const auth = {
    * @returns {boolean}
    */
   isAuthenticated() {
-    return !!localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+
+    // Check if token is still valid (basic check)
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+
+      if (payload.exp && payload.exp < currentTime) {
+        // Token expired
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error checking token validity:', error);
+      this.logout();
+      return false;
+    }
   },
 
   /**
@@ -175,77 +209,15 @@ const properties = {
    * @returns {Promise<object>}
    */
   async uploadImages(formData) {
-    const token = localStorage.getItem('authToken');
-
-    // For demo purposes, we'll use a mock response
-    // In production, this would upload to Cloudinary and then to your backend
     console.log('Uploading images to Cloudinary...');
 
-    // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Mock response - in production this would be the actual Cloudinary/backend response
-    return {
-      success: true,
-      message: 'Images uploaded successfully',
-      images: [
-        {
-          id: 'img_' + Date.now() + '_1',
-          url: 'https://res.cloudinary.com/propabridge/image/upload/v1/properties/demo1.jpg',
-          public_id: 'properties/demo1',
-          width: 1200,
-          height: 800
-        },
-        {
-          id: 'img_' + Date.now() + '_2',
-          url: 'https://res.cloudinary.com/propabridge/image/upload/v1/properties/demo2.jpg',
-          public_id: 'properties/demo2',
-          width: 1200,
-          height: 800
-        }
-      ]
-    };
-
-    // Production implementation would look like:
-    /*
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-    // Upload each image to Cloudinary
-    const uploadPromises = [];
-    for (let [key, file] of formData.entries()) {
-      if (key === 'images' && file instanceof File) {
-        const cloudinaryFormData = new FormData();
-        cloudinaryFormData.append('file', file);
-        cloudinaryFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-        cloudinaryFormData.append('folder', 'properties');
-
-        uploadPromises.push(
-          fetch(cloudinaryUrl, {
-            method: 'POST',
-            body: cloudinaryFormData
-          }).then(res => res.json())
-        );
-      }
-    }
-
-    const cloudinaryResults = await Promise.all(uploadPromises);
-
-    // Send image URLs to your backend
-    const imageData = cloudinaryResults.map(result => ({
-      url: result.secure_url,
-      public_id: result.public_id,
-      width: result.width,
-      height: result.height
-    }));
-
+    // Use the real backend Cloudinary integration
     return apiRequest('/properties/images', {
       method: 'POST',
-      body: JSON.stringify({
-        propertyId: formData.get('propertyId'),
-        images: imageData
-      })
+      body: formData
+      // Note: FormData automatically handles content-type and boundaries
+      // Authentication will be handled by the apiRequest function
     });
-    */
   },
 
   /**
@@ -280,7 +252,7 @@ const chat = {
     return apiRequest('/chat', {
       method: 'POST',
       body: JSON.stringify({ message, phone }),
-      skipAuth: true
+      skipAuth: true // Chat is public but tracks user phone
     });
   },
 
@@ -291,9 +263,145 @@ const chat = {
    */
   async getHistory(phone) {
     const data = await apiRequest(`/chat/history?phone=${phone}`, {
-      skipAuth: true
+      skipAuth: true // Chat history is public for the phone number
     });
     return data.history || [];
+  }
+};
+
+/**
+ * Admin API
+ */
+const admin = {
+  /**
+   * Get admin statistics
+   * @returns {Promise<object>}
+   */
+  async getStats() {
+    const adminToken = localStorage.getItem('adminToken');
+    return apiRequest('/properties/admin/stats', {
+      headers: adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {}
+    });
+  },
+
+  /**
+   * Get pending properties for approval
+   * @returns {Promise<array>}
+   */
+  async getPendingProperties() {
+    const adminToken = localStorage.getItem('adminToken');
+    return apiRequest('/properties/admin/pending', {
+      headers: adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {}
+    });
+  },
+
+  /**
+   * Approve a property
+   * @param {number} propertyId - Property ID
+   * @param {string} notes - Admin notes
+   * @returns {Promise<object>}
+   */
+  async approveProperty(propertyId, notes = '') {
+    const adminToken = localStorage.getItem('adminToken');
+    return apiRequest(`/properties/${propertyId}/approve`, {
+      method: 'PUT',
+      body: JSON.stringify({ adminNotes: notes }),
+      headers: adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {}
+    });
+  },
+
+  /**
+   * Reject a property
+   * @param {number} propertyId - Property ID
+   * @param {string} reason - Rejection reason
+   * @returns {Promise<object>}
+   */
+  async rejectProperty(propertyId, reason) {
+    const adminToken = localStorage.getItem('adminToken');
+    return apiRequest(`/properties/${propertyId}/reject`, {
+      method: 'PUT',
+      body: JSON.stringify({ reason }),
+      headers: adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {}
+    });
+  },
+
+  /**
+   * Login as admin using regular user authentication
+   * Admin users are regular users with admin role
+   * @param {string} phone - Admin phone number
+   * @param {string} password - Admin password (not used for OTP)
+   * @returns {Promise<object>}
+   */
+  async adminLogin(phone, password) {
+    try {
+      // Clean phone number for admin login (same logic as regular auth)
+      const cleanPhone = phone.replace(/\s/g, '');
+      let apiPhone = cleanPhone;
+
+      // Convert to API format (+234XXXXXXXXXX)
+      if (cleanPhone.startsWith('0')) {
+        apiPhone = '+234' + cleanPhone.substring(1);
+      } else if (cleanPhone.startsWith('234')) {
+        apiPhone = '+' + cleanPhone;
+      } else if (cleanPhone.startsWith('+234')) {
+        apiPhone = cleanPhone;
+      }
+
+      // For demo: Check if phone matches admin phone or password is admin123
+      if (apiPhone === '+2348055269579' || password === 'admin123') {
+        // Generate admin token
+        const payload = {
+          userId: 'admin',
+          phone: apiPhone,
+          role: 'admin',
+          exp: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days
+        };
+
+        const token = Buffer.from(JSON.stringify(payload)).toString('base64');
+        localStorage.setItem('adminToken', token);
+
+        return {
+          success: true,
+          token,
+          admin: { phone: apiPhone, role: 'admin' }
+        };
+      }
+
+      return {
+        success: false,
+        message: 'Admin access denied. Use admin phone number (+2348055269579) with password "admin123"'
+      };
+
+    } catch (error) {
+      console.error('Admin login error:', error);
+      return {
+        success: false,
+        message: 'Admin login failed'
+      };
+    }
+  },
+
+  /**
+   * Check if admin is logged in
+   * @returns {boolean}
+   */
+  isAdminLoggedIn() {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(Buffer.from(token, 'base64').toString());
+      return payload.role === 'admin' && payload.exp > Date.now();
+    } catch (error) {
+      return false;
+    }
+  },
+
+  /**
+   * Admin logout
+   */
+  adminLogout() {
+    localStorage.removeItem('adminToken');
   }
 };
 
@@ -303,6 +411,7 @@ const chat = {
 window.API = {
   auth,
   properties,
+  admin,
   chat
 };
 

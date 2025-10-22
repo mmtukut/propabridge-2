@@ -5,6 +5,7 @@ const cloudinary = require('cloudinary').v2;
 const { query } = require('../config/db');
 const Property = require('../models/Property');
 const matchingService = require('../services/matchingService');
+const { requireAdmin } = require('../middleware/adminAuth');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -331,6 +332,155 @@ router.post('/images', upload.array('images', 10), async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to upload images',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/v1/properties/admin/pending
+ * Get all pending properties for admin approval (requires admin authentication)
+ */
+router.get('/admin/pending', requireAdmin, async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT p.*, u.name as owner_name, u.phone as owner_phone,
+              COUNT(pi.id) as image_count
+       FROM properties p
+       LEFT JOIN users u ON p.user_id = u.id
+       LEFT JOIN property_images pi ON p.id = pi.property_id
+       WHERE p.verified = false AND p.status = 'pending'
+       GROUP BY p.id, u.name, u.phone
+       ORDER BY p.created_at DESC`
+    );
+
+    res.status(200).json({
+      success: true,
+      count: result.rows.length,
+      properties: result.rows
+    });
+  } catch (error) {
+    console.error('Error fetching pending properties:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch pending properties',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/v1/properties/:id/approve
+ * Approve a property (requires admin authentication)
+ */
+router.put('/:id/approve', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { adminNotes } = req.body;
+
+    const property = await Property.update(id, {
+      verified: true,
+      status: 'active',
+      verified_at: new Date(),
+      verified_by: req.adminUser.phone, // Use authenticated admin's phone
+      admin_notes: adminNotes
+    });
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Property not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Property approved successfully',
+      property
+    });
+  } catch (error) {
+    console.error('Error approving property:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to approve property',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/v1/properties/:id/reject
+ * Reject a property (requires admin authentication)
+ */
+router.put('/:id/reject', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const property = await Property.update(id, {
+      status: 'rejected',
+      rejected_at: new Date(),
+      rejected_by: req.adminUser.phone, // Use authenticated admin's phone
+      rejection_reason: reason
+    });
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Property not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Property rejected',
+      property
+    });
+  } catch (error) {
+    console.error('Error rejecting property:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reject property',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/v1/properties/admin/stats
+ * Get admin statistics (requires admin authentication)
+ */
+router.get('/admin/stats', requireAdmin, async (req, res) => {
+  try {
+    const stats = await query(`
+      SELECT
+        COUNT(*) as total_properties,
+        COUNT(CASE WHEN verified = true THEN 1 END) as verified_properties,
+        COUNT(CASE WHEN verified = false AND status = 'pending' THEN 1 END) as pending_properties,
+        COUNT(CASE WHEN status = 'rejected' THEN 1 END) as rejected_properties,
+        AVG(price) as avg_price,
+        COUNT(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN 1 END) as new_this_week
+      FROM properties
+    `);
+
+    const result = stats.rows[0];
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        total: parseInt(result.total_properties),
+        verified: parseInt(result.verified_properties),
+        pending: parseInt(result.pending_properties),
+        rejected: parseInt(result.rejected_properties),
+        avgPrice: parseFloat(result.avg_price) || 0,
+        newThisWeek: parseInt(result.new_this_week)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching admin stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch admin statistics',
       error: error.message
     });
   }

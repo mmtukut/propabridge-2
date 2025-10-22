@@ -756,8 +756,31 @@ body {
 
 /* Processing Screen */
 .processing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
     text-align: center;
     padding: 40px 20px;
+}
+
+.ai-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 200, 83, 0.1);
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin-bottom: 24px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
 }
 
 .processing-animation {
@@ -770,6 +793,20 @@ body {
     animation: spin 1s linear infinite;
 }
 
+.processing-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: white;
+}
+
+.processing-subtitle {
+    font-size: 15px;
+    opacity: 0.6;
+    margin-bottom: 40px;
+    color: white;
+}
+
 .processing-text {
     font-size: 18px;
     color: white;
@@ -779,6 +816,25 @@ body {
 .processing-subtext {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.7);
+}
+
+.progress-item {
+    padding: 16px;
+    margin-bottom: 12px;
+    max-width: 300px;
+    width: 100%;
+    transition: all 0.3s ease;
+    text-align: left;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+
+.progress-item.completed {
+    border-color: #00C853;
+    background: rgba(0, 200, 83, 0.1);
 }
 
 /* Results Screen */
